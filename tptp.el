@@ -1,3 +1,8 @@
-;;; tptp.el Work with TPTP files, theorem provers, and model finders
+;;; tptp.el --- Work with TPTP files, theorem provers, and model finders
+
+;;; Commentary:
+;; 
+
+;;; Code:
 
 ;;; tptp.el ends here
