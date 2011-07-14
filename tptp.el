@@ -5,4 +5,6 @@
 
 ;;; Code:
 
+(provide 'tptp)
+
 ;;; tptp.el ends here
