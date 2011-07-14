@@ -13,7 +13,7 @@
 ;;
 ;;; Commentary:
 ;; 
-;; Acknowledgements:
+;; Acknowledgments:
 ;;
 ;; Ed Zalta provided the impetus for launching this package.
 
