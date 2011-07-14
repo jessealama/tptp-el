@@ -2,6 +2,9 @@
 
 ;;; Commentary:
 ;; 
+;; Acknowledgements: 
+;;
+;; Ed Zalta provided the impetus for launching this package.
 
 ;;; Code:
 
