@@ -53,7 +53,7 @@ eprover can be found.")
     (save-excursion
       (switch-to-buffer eprover-buffer)
       (erase-buffer)
-      (call-process *eprover-program* tptp-file t t)
+      (call-process *eprover-program* nil t t tptp-file)
       (setf buffer-read-only t))))
 
 (defun paradox-current-buffer ()
@@ -65,7 +65,7 @@ eprover can be found.")
     (save-excursion
       (switch-to-buffer paradox-buffer)
       (erase-buffer)
-      (call-process *paradox-program* tptp-file t t)
+      (call-process *paradox-program* nil t t tptp-file)
       (setf buffer-read-only t))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
