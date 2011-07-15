@@ -39,7 +39,13 @@ eprover can be found.")
   "Invoke the E prover on the current buffer."
   (interactive)
   (save-buffer)
-  (call-process *eprover-program*))
+  (let ((eprover-buffer (get-buffer-create "*eprover*"))
+	(tptp-file (buffer-file-name)))
+    (save-excursion
+      (switch-to-buffer eprover-buffer)
+      (erase-buffer)
+      (call-process *eprover-program* tptp-file t t)
+      (setf buffer-read-only t))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; The end
