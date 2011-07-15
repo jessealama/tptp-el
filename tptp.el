@@ -31,6 +31,14 @@ program name.  If it is not an absolute path, your PATH
 environment variable will be consulted to determine where
 eprover can be found.")
 
+(defvar *paradox-program* "eprover"
+  "The paradox model finder program.
+
+That value of this variable can be either a path or a
+program name.  If it is not an absolute path, your PATH
+environment variable will be consulted to determine where
+eprover can be found.")
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Call eprover on the current buffer
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
