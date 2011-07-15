@@ -55,6 +55,18 @@ eprover can be found.")
       (call-process *eprover-program* tptp-file t t)
       (setf buffer-read-only t))))
 
+(defun paradox-current-buffer ()
+  "Invoke the paradox model finder on the current buffer."
+  (interactive)
+  (save-buffer)
+  (let ((paradox-buffer (get-buffer-create "*paradox*"))
+	(tptp-file (buffer-file-name)))
+    (save-excursion
+      (switch-to-buffer paradox-buffer)
+      (erase-buffer)
+      (call-process *paradox-program* tptp-file t t)
+      (setf buffer-read-only t))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; The end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
