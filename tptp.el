@@ -40,7 +40,8 @@ environment variable will be consulted to determine where
 eprover can be found.")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Call eprover on the current buffer
+;;; Invoking a theorem prover or model finder on the (contents of the)
+;;; current buffer
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun eprove-current-buffer ()
