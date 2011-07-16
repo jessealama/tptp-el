@@ -183,6 +183,18 @@ after ADDITIONAL-VAMPIRE-ARGUMENTS."
 
 (defvar tptp-menu
   '(list "TPTP"
+	 '("Proofs"
+	   ["Run E on the current buffer"
+	    (call-interactively 'eprove-current-buffer)
+	    t]
+	   ["Run Vampire on the current buffer"
+	    (call-interactively 'vampire-current-buffer)
+	    t])
+	 '("Models"
+	   ["Run paradox on the current buffer"
+	    (call-interactively 'paradox-current-buffer)
+	    t])
+	 "-"
 	 ["Customize TPTP mode" (customize-group 'tptp) t]))
 
 (defun tptp-menu ()
