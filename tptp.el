@@ -35,6 +35,7 @@
   "The empty string.")
 
 (defmacro empty-string? (thing)
+  "Assuming that THING is a string, determine whether it is empty."
   `(string= ,thing +empty-string+))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
