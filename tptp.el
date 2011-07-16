@@ -44,16 +44,28 @@ eprover can be found.")
 ;;; current buffer
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun eprove-current-buffer ()
+(defun eprove-current-buffer (additional-e-arguments)
   "Invoke the E prover on the current buffer."
-  (interactive)
+  (interactive "sAdditional flags with which E will be invoked: ")
   (save-buffer)
   (let ((eprover-buffer (get-buffer-create "*eprover*"))
 	(tptp-file (buffer-file-name)))
     (save-excursion
       (switch-to-buffer eprover-buffer)
       (erase-buffer)
-      (call-process *eprover-program* nil t t tptp-file)
+      (insert "Calling E like this:")
+      (newline 2)
+      (if (string= additional-e-arguments "")
+	  (insert "  " *eprover-program* " " tptp-file)
+	  (insert "  " *eprover-program* " " additional-e-arguments " " tptp-file))
+      (newline 2)
+      (insert "Results:")
+      (newline)
+      (insert "======================================================================")
+      (newline)
+      (if (string= additional-e-arguments "")
+	  (call-process *eprover-program* nil t t tptp-file)
+	  (call-process *eprover-program* nil t t additional-e-arguments tptp-file))
       (setf buffer-read-only t))))
 
 (defun paradox-current-buffer ()
