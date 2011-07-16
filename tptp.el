@@ -164,6 +164,19 @@ ADDITIONAL-E-ARGUMENTS."
 ;;; TPTP minor mode
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defvar tptp-mode-map nil
+  "Keymap used by TPTP mode")
+
+(unless tptp-mode-map
+  (setf tptp-mode-map (make-sparse-keymap)))
+
+(defvar tptp-menu
+  '(list "TPTP"
+	 ["Customize TPTP mode" (customize-group 'tptp) t]))
+
+(defun tptp-menu ()
+  (easy-menu-define tptp-menu-map tptp-mode-map "" (eval tptp-menu)))
+
 (define-minor-mode tptp-mode
   "Work with TPTP files."
   :lighter " TPTP"
