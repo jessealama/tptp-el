@@ -64,7 +64,11 @@ eprover can be found.")
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun eprove-current-buffer (additional-e-arguments)
-  "Invoke the E prover on the current buffer."
+  "Invoke the E prover on the current buffer.  The filename of
+the current buffer will be used as the file argument;
+ADDITIONAL-E-ARGUMENTS, a string, will be the other arguments
+given to E.  The filename argument comes last, after
+ADDITIONAL-E-ARGUMENTS."
   (interactive "sAdditional flags with which E will be invoked: ")
   (save-buffer)
   (let ((eprover-buffer (get-buffer-create "*eprover*"))
