@@ -69,7 +69,7 @@ the current buffer will be used as the file argument;
 ADDITIONAL-E-ARGUMENTS, a string, will be the other arguments
 given to E.  The filename argument comes last, after
 ADDITIONAL-E-ARGUMENTS."
-  (interactive "sAdditional flags with which E will be invoked: ")
+  (interactive "sAdditional flags with which E will be invoked, if any: ")
   (save-buffer)
   (let ((eprover-buffer (get-buffer-create "*eprover*"))
 	(tptp-file (buffer-file-name)))
