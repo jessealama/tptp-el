@@ -23,8 +23,11 @@
 ;;; Utilities
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defconst +empty-string+ ""
+  "The empty string.")
+
 (defmacro empty-string? (thing)
-  `(string= ,thing ""))
+  `(string= ,thing +empty-string+))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Names of theorem provers and model finders
