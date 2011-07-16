@@ -142,6 +142,13 @@ ADDITIONAL-PARADOX-ARGUMENTS."
       (setf buffer-read-only t))))
 
 (defun vampire-current-buffer (additional-vampire-arguments)
+  "Invoke the Vampire theorem prover on the current buffer. The
+filename of the current buffer will be used as the file
+argument (to be precise, the standard input of Vampire will be
+the file that the current buffer is editing);
+ADDITIONAL-VAMPIRE-ARGUMENTS, a string, will be the other
+arguments given to Vampire.  The filename argument comes last,
+after ADDITIONAL-VAMPIRE-ARGUMENTS."
   (interactive "sAdditional flags with which vampire will be invoked, if any: ")
   (save-buffer)
   (let ((vampire-buffer (get-buffer-create "*vampire*"))
