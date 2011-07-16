@@ -182,7 +182,8 @@ ADDITIONAL-E-ARGUMENTS."
   :lighter " TPTP"
   :require nil
   :global t
-  :group 'tptp)
+  :group 'tptp
+  (tptp-menu))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; The end
