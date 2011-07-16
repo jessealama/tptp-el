@@ -176,7 +176,7 @@ after ADDITIONAL-VAMPIRE-ARGUMENTS."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defvar tptp-mode-map nil
-  "Keymap used by TPTP mode")
+  "Keymap used by TPTP mode.")
 
 (unless tptp-mode-map
   (setf tptp-mode-map (make-sparse-keymap)))
