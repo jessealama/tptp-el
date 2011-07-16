@@ -50,16 +50,30 @@
 ;;; Names of theorem provers and model finders
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defvar *eprover-program* "eprover"
+(defcustom *eprover-program* "eprover"
   "The E theorem prover program.
 
 That value of this variable can be either a path or a
 program name.  If it is not an absolute path, your PATH
 environment variable will be consulted to determine where
-eprover can be found.")
+eprover can be found."
+  :tag "E program"
+  :group 'tptp
+  :type '(string))
 
-(defvar *paradox-program* "paradox"
+(defcustom *paradox-program* "paradox"
   "The paradox model finder program.
+
+That value of this variable can be either a path or a
+program name.  If it is not an absolute path, your PATH
+environment variable will be consulted to determine where
+eprover can be found."
+  :tag "Paradox program"
+  :group 'tptp
+  :type '(string))
+
+(defcustom *vampire-program* "vampire"
+  "The name of the vampire theorem prover.
 
 That value of this variable can be either a path or a
 program name.  If it is not an absolute path, your PATH
