@@ -114,7 +114,11 @@ ADDITIONAL-E-ARGUMENTS."
       (setf buffer-read-only t))))
 
 (defun paradox-current-buffer (additional-paradox-arguments)
-  "Invoke the paradox model finder on the current buffer."
+  "Invoke the paradox model finder on the current buffer. The filename of
+the current buffer will be used as the file argument;
+ADDITIONAL-PARADOX-ARGUMENTS, a string, will be the other arguments
+given to paradox.  The filename argument comes last, after
+ADDITIONAL-PARADOX-ARGUMENTS."
   (interactive "sAdditional flags with which paradox will be invoked, if any: ")
   (save-buffer)
   (let ((paradox-buffer (get-buffer-create "*paradox*"))
