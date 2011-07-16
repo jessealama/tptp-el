@@ -20,6 +20,13 @@
 ;;; Code:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Utilities
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmacro empty-string? (thing)
+  `(string= ,thing ""))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Names of theorem provers and model finders
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -55,7 +62,7 @@ eprover can be found.")
       (erase-buffer)
       (insert "Calling E like this:")
       (newline 2)
-      (if (string= additional-e-arguments "")
+      (if (empty-string? additional-e-arguments)
 	  (insert "  " *eprover-program* " " tptp-file)
 	  (insert "  " *eprover-program* " " additional-e-arguments " " tptp-file))
       (newline 2)
@@ -63,7 +70,7 @@ eprover can be found.")
       (newline)
       (insert "======================================================================")
       (newline)
-      (if (string= additional-e-arguments "")
+      (if (empty-string? additional-e-arguments)
 	  (call-process *eprover-program* nil t t tptp-file)
 	  (call-process *eprover-program* nil t t additional-e-arguments tptp-file))
       (setf buffer-read-only t))))
