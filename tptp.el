@@ -167,8 +167,8 @@ after ADDITIONAL-VAMPIRE-ARGUMENTS."
       (insert +report-separator+)
       (newline)
       (if (empty-string? additional-vampire-arguments)
-	  (call-process *vampire-program* tptp-file nil t t)
-	  (call-process *vampire-program* tptp-file nil t t additional-vampire-arguments))
+	  (call-process *vampire-program* tptp-file t t)
+	  (call-process *vampire-program* tptp-file t t additional-vampire-arguments))
       (setf buffer-read-only t))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
