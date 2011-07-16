@@ -113,7 +113,7 @@ ADDITIONAL-E-ARGUMENTS."
 	  (call-process *eprover-program* nil t t additional-e-arguments tptp-file))
       (setf buffer-read-only t))))
 
-(defun paradox-current-buffer ()
+(defun paradox-current-buffer (additional-paradox-arguments)
   "Invoke the paradox model finder on the current buffer."
   (interactive "sAdditional flags with which paradox will be invoked, if any: ")
   (save-buffer)
