@@ -92,7 +92,7 @@ ADDITIONAL-E-ARGUMENTS."
       (setf buffer-read-only t))))
 
 (defun paradox-current-buffer ()
-  "Invoke the paradox model finder on the current buffer."
+  "Invoke the paradox theorem prover on the current buffer."
   (interactive)
   (save-buffer)
   (let ((paradox-buffer (get-buffer-create "*paradox*"))
