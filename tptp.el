@@ -181,7 +181,7 @@ ADDITIONAL-E-ARGUMENTS."
   "Work with TPTP files."
   :lighter " TPTP"
   :require nil
-  :global t
+  :global nil
   :group 'tptp
   (tptp-menu))
 
