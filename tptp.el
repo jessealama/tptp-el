@@ -20,6 +20,14 @@
 ;;; Code:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Variables and constants
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defconst +report-separator+
+  "======================================================================"
+  "The separator to use when generating reports.")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Utilities
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -71,7 +79,7 @@ eprover can be found.")
       (newline 2)
       (insert "Results:")
       (newline)
-      (insert "======================================================================")
+      (insert +report-separator+)
       (newline)
       (if (empty-string? additional-e-arguments)
 	  (call-process *eprover-program* nil t t tptp-file)
