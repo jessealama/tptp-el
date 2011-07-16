@@ -67,7 +67,7 @@ eprover can be found."
 That value of this variable can be either a path or a
 program name.  If it is not an absolute path, your PATH
 environment variable will be consulted to determine where
-eprover can be found."
+paradox can be found."
   :tag "Paradox program"
   :group 'tptp
   :type '(string))
@@ -78,7 +78,7 @@ eprover can be found."
 That value of this variable can be either a path or a
 program name.  If it is not an absolute path, your PATH
 environment variable will be consulted to determine where
-eprover can be found.")
+vampire can be found.")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Invoking a theorem prover or model finder on the (contents of the)
