@@ -198,7 +198,11 @@ after ADDITIONAL-VAMPIRE-ARGUMENTS."
 	 ["Customize TPTP mode" (customize-group 'tptp) t]))
 
 (defun tptp-menu ()
-  (easy-menu-define tptp-menu-map tptp-mode-map "" (eval tptp-menu)))
+  "Set up a menu for the TPTP minor mode (which is not yet defined)."
+  (easy-menu-define tptp-menu-map
+                    tptp-mode-map
+		    ""
+		    (eval tptp-menu)))
 
 (define-minor-mode tptp-mode
   "Work with TPTP files."
