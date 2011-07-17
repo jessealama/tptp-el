@@ -107,6 +107,9 @@ vampire can be found.")
   (define-key view-proof-mode-map "DEL" 'backward-page)
   (define-key view-proof-mode-map "b" 'backward-page)
 
+  ; Saving proofs
+  (define-key view-proof-mode-map "s" 'view-proof-save-deduction)
+
   ; Help
   (define-key view-proof-mode-map "h" 'describe-mode)
   (define-key view-proof-mode-map "H" 'describe-mode)
@@ -121,6 +124,13 @@ If ARG is a negative integer, disable `view-proof-mode'; otherwise, enable this 
   (use-local-map view-proof-mode-map)
   (setf major-mode 'view-proof-mode
 	mode-name "View-Proof"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Saving deductions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun view-proof-save-deduction ()
+  "Save the results of the current proof to a file.")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Model view mode
