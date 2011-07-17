@@ -111,7 +111,8 @@ ADDITIONAL-E-ARGUMENTS."
       (if (empty-string? additional-e-arguments)
 	  (call-process *eprover-program* nil t t tptp-file)
 	  (call-process *eprover-program* nil t t additional-e-arguments tptp-file))
-      (setf buffer-read-only t))))
+      (setf buffer-read-only t)
+      (view-mode 1))))
 
 (defun paradox-current-buffer (additional-paradox-arguments)
   "Invoke the paradox model finder on the current buffer. The filename of
@@ -139,7 +140,8 @@ ADDITIONAL-PARADOX-ARGUMENTS."
       (if (empty-string? additional-paradox-arguments)
 	  (call-process *paradox-program* nil t t tptp-file)
 	  (call-process *paradox-program* nil t t additional-paradox-arguments tptp-file))
-      (setf buffer-read-only t))))
+      (setf buffer-read-only t)
+      (view-mode 1))))
 
 (defun vampire-current-buffer (additional-vampire-arguments)
   "Invoke the Vampire theorem prover on the current buffer. The
