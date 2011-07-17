@@ -259,6 +259,14 @@ after ADDITIONAL-VAMPIRE-ARGUMENTS."
 ;;; Proof viewing mode
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defvar view-proof-mode-map nil "Keymap used by view-proof mode.")
+
+(unless view-proof-mode-map
+  (setf view-proof-mode-map (make-sparse-keymap))
+  (define-key view-proof-mode-map "<space>" 'forward-page)
+  (define-key view-proof-mode-map "<backspace>" 'backward-page)
+  (define-key view-proof-mode-map "b" 'backward-page))
+
 (defun view-proof-mode (&optional arg)
   "Major mode for viewing proofs.
 
