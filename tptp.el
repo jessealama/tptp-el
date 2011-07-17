@@ -130,7 +130,8 @@ If ARG is a negative integer, disable `view-proof-mode'; otherwise, enable this 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun view-proof-save-deduction ()
-  "Save the results of the current proof to a file.")
+  "Save the results of the current proof to a file."
+  (interactive))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Model view mode
