@@ -108,7 +108,9 @@ vampire can be found.")
   (define-key view-proof-mode-map "?" 'view-proof-show-help))
 
 (defun view-proof-show-help ()
-  "Explain how to use View-Proof mode.")
+  "Explain how to use View-Proof mode."
+  (interactive)
+  (describe-mode))
 
 (defun view-proof-mode (&optional arg)
   "Major mode for viewing proofs.
