@@ -103,14 +103,9 @@ vampire can be found.")
   (define-key view-proof-mode-map "f" 'forward-page)
   (define-key view-proof-mode-map "DEL" 'backward-page)
   (define-key view-proof-mode-map "b" 'backward-page)
-  (define-key view-proof-mode-map "h" 'view-proof-show-help)
-  (define-key view-proof-mode-map "H" 'view-proof-show-help)
-  (define-key view-proof-mode-map "?" 'view-proof-show-help))
-
-(defun view-proof-show-help ()
-  "Explain how to use View-Proof mode."
-  (interactive)
-  (describe-mode))
+  (define-key view-proof-mode-map "h" 'describe-mode)
+  (define-key view-proof-mode-map "H" 'describe-mode)
+  (define-key view-proof-mode-map "?" 'describe-mode))
 
 (defun view-proof-mode (&optional arg)
   "Major mode for viewing proofs.
