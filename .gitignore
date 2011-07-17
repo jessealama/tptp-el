@@ -1,6 +1,4 @@
 *~
 *.elc
-
-rot13.scpt
-
+*.scpt
 vamp.sh
