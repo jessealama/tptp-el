@@ -158,63 +158,44 @@ If ARG is a negative integer, disable `view-model-mode'; otherwise, enable this 
 ;;; current buffer
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun eprove-current-buffer (additional-e-arguments)
-  "Invoke the E prover on the current buffer.  The filename of
-the current buffer will be used as the file argument;
-ADDITIONAL-E-ARGUMENTS, a string, will be the other arguments
-given to E.  The filename argument comes last, after
-ADDITIONAL-E-ARGUMENTS."
-  (interactive "sAdditional flags with which E will be invoked, if any: ")
+(defun run-prover (prover additional-arguments)
+  (interactive (format "sAdditional flags with which %s will be invoked, if any: " prover))
   (save-buffer)
-  (let ((eprover-buffer (get-buffer-create "*eprover*"))
-	(tptp-file (buffer-file-name)))
+  (let* ((prover-buffer (get-buffer-create "*proof*"))
+	 (tptp-file-absolute-path (buffer-file-name))
+	 (tptp-file-directory (file-name-directory tptp-file-absolute-path))
+	 (tptp-file-only-filename (file-name-nondirectory tptp-file-absolute-path))
+	 (tptp-file-basename (file-name-sans-extension tptp-file-only-filename)))
     (save-excursion
-      (switch-to-buffer eprover-buffer)
+      (switch-to-buffer prover-buffer)
+
+      ;; Kill everything that might already be here
       (erase-buffer)
-      (insert "Calling E like this:")
+
+      ;; Set up buffer-local variables for later use
+      (make-local-variable 'proof-directory)
+      (make-local-variable 'proof-absolute-path)
+      (make-local-variable 'proof-basename)
+      (setf proof-directory tptp-file-directory
+	    proof-absolute-path tptp-file-absolute-path
+	    proof-basename tptp-file-basename)
+
+      ;; Now start inserting content into the buffer
+      (insert (format "Calling %s like this:" prover))
       (newline 2)
-      (if (empty-string? additional-e-arguments)
-	  (insert "  " *eprover-program* " " tptp-file)
-	  (insert "  " *eprover-program* " " additional-e-arguments " " tptp-file))
+      (if (empty-string? additional-arguments)
+	  (insert "  " prover " < " tptp-file-absolute-path)
+	  (insert "  " prover " " additional-arguments " < " tptp-file-absolute-path))
       (newline 2)
       (insert "Results:")
       (newline)
       (insert +report-separator+)
       (newline)
-      (if (empty-string? additional-e-arguments)
-	  (call-process *eprover-program* nil t t tptp-file)
-	  (call-process *eprover-program* nil t t additional-e-arguments tptp-file))
+      (if (empty-string? additional-arguments)
+	  (call-process prover tptp-file-absolute-path t t)
+	  (call-process prover tptp-file-absolute-path t t additional-arguments))
       (setf buffer-read-only t)
       (view-proof-mode 1))))
-
-(defun paradox-current-buffer (additional-paradox-arguments)
-  "Invoke the paradox model finder on the current buffer. The filename of
-the current buffer will be used as the file argument;
-ADDITIONAL-PARADOX-ARGUMENTS, a string, will be the other arguments
-given to paradox.  The filename argument comes last, after
-ADDITIONAL-PARADOX-ARGUMENTS."
-  (interactive "sAdditional flags with which paradox will be invoked, if any: ")
-  (save-buffer)
-  (let ((paradox-buffer (get-buffer-create "*paradox*"))
-	(tptp-file (buffer-file-name)))
-    (save-excursion
-      (switch-to-buffer paradox-buffer)
-      (erase-buffer)
-      (insert "Calling paradox like this:")
-      (newline 2)
-      (if (empty-string? additional-paradox-arguments)
-	  (insert "  " *paradox-program* " " tptp-file)
-	  (insert "  " *paradox-program* " " additional-paradox-arguments " " tptp-file))
-      (newline 2)
-      (insert "Results:")
-      (newline)
-      (insert +report-separator+)
-      (newline)
-      (if (empty-string? additional-paradox-arguments)
-	  (call-process *paradox-program* nil t t tptp-file)
-	  (call-process *paradox-program* nil t t additional-paradox-arguments tptp-file))
-      (setf buffer-read-only t)
-      (view-mode 1))))
 
 (defun equinox-current-buffer (additional-equinox-arguments)
   "Invoke the equinox model finder on the current buffer. The filename of
@@ -223,27 +204,7 @@ ADDITIONAL-EQUINOX-ARGUMENTS, a string, will be the other arguments
 given to equinox.  The filename argument comes last, after
 ADDITIONAL-EQUINOX-ARGUMENTS."
   (interactive "sAdditional flags with which equinox will be invoked, if any: ")
-  (save-buffer)
-  (let ((equinox-buffer (get-buffer-create "*equinox*"))
-	(tptp-file (buffer-file-name)))
-    (save-excursion
-      (switch-to-buffer equinox-buffer)
-      (erase-buffer)
-      (insert "Calling equinox like this:")
-      (newline 2)
-      (if (empty-string? additional-equinox-arguments)
-	  (insert "  " *equinox-program* " " tptp-file)
-	  (insert "  " *equinox-program* " " additional-equinox-arguments " " tptp-file))
-      (newline 2)
-      (insert "Results:")
-      (newline)
-      (insert +report-separator+)
-      (newline)
-      (if (empty-string? additional-equinox-arguments)
-	  (call-process *equinox-program* nil t t tptp-file)
-	  (call-process *equinox-program* nil t t additional-equinox-arguments tptp-file))
-      (setf buffer-read-only t)
-      (view-mode 1))))
+  (run-prover *equinox-program* additional-equinox-arguments))
 
 (defun vampire-current-buffer (additional-vampire-arguments)
   "Invoke the Vampire theorem prover on the current buffer. The
@@ -254,27 +215,25 @@ ADDITIONAL-VAMPIRE-ARGUMENTS, a string, will be the other
 arguments given to Vampire.  The filename argument comes last,
 after ADDITIONAL-VAMPIRE-ARGUMENTS."
   (interactive "sAdditional flags with which vampire will be invoked, if any: ")
-  (save-buffer)
-  (let ((vampire-buffer (get-buffer-create "*vampire*"))
-	(tptp-file (buffer-file-name)))
-    (save-excursion
-      (switch-to-buffer vampire-buffer)
-      (erase-buffer)
-      (insert "Calling vampire like this:")
-      (newline 2)
-      (if (empty-string? additional-vampire-arguments)
-	  (insert "  " *vampire-program* " < " tptp-file)
-	  (insert "  " *vampire-program* " " additional-vampire-arguments " < " tptp-file))
-      (newline 2)
-      (insert "Results:")
-      (newline)
-      (insert +report-separator+)
-      (newline)
-      (if (empty-string? additional-vampire-arguments)
-	  (call-process *vampire-program* tptp-file t t)
-	  (call-process *vampire-program* tptp-file t t additional-vampire-arguments))
-      (setf buffer-read-only t)
-      (view-proof-mode 1))))
+  (run-prover *vampire-program* additional-vampire-arguments))
+
+(defun eprove-current-buffer (additional-e-arguments)
+  "Invoke the E prover on the current buffer.  The filename of
+the current buffer will be used as the file argument;
+ADDITIONAL-E-ARGUMENTS, a string, will be the other arguments
+given to E.  The filename argument comes last, after
+ADDITIONAL-E-ARGUMENTS."
+  (interactive "sAdditional flags with which E will be invoked, if any: ")
+  (run-prover *eprover-program* additional-e-arguments))
+
+(defun paradox-current-buffer (additional-paradox-arguments)
+  "Invoke the paradox model finder on the current buffer. The filename of
+the current buffer will be used as the file argument;
+ADDITIONAL-PARADOX-ARGUMENTS, a string, will be the other arguments
+given to paradox.  The filename argument comes last, after
+ADDITIONAL-PARADOX-ARGUMENTS."
+  (interactive "sAdditional flags with which paradox will be invoked, if any: ")
+  (run-prover *paradox-program* additional-paradox-arguments))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; TPTP minor mode
