@@ -180,9 +180,11 @@ If ARG is a negative integer, disable `view-model-mode'; otherwise, enable this 
       (make-local-variable 'proof-directory)
       (make-local-variable 'proof-absolute-path)
       (make-local-variable 'proof-basename)
+      (make-local-variable 'proof-prover)
       (setf proof-directory tptp-file-directory
 	    proof-absolute-path tptp-file-absolute-path
-	    proof-basename tptp-file-basename)
+	    proof-basename tptp-file-basename
+	    proof-prover prover)
 
       ;; Now start inserting content into the buffer
       (insert (format "Calling %s like this:" prover))
