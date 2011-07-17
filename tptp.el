@@ -72,6 +72,17 @@ paradox can be found."
   :group 'tptp
   :type '(string))
 
+(defcustom *equinox-program* "equinox"
+  "The equinox theorem prover program.
+
+That value of this variable can be either a path or a
+program name.  If it is not an absolute path, your PATH
+environment variable will be consulted to determine where
+equinox can be found."
+  :tag "Equinox program"
+  :group 'tptp
+  :type '(string))
+
 (defcustom *vampire-program* "vampire"
   "The name of the vampire theorem prover.
 
@@ -140,6 +151,35 @@ ADDITIONAL-PARADOX-ARGUMENTS."
       (if (empty-string? additional-paradox-arguments)
 	  (call-process *paradox-program* nil t t tptp-file)
 	  (call-process *paradox-program* nil t t additional-paradox-arguments tptp-file))
+      (setf buffer-read-only t)
+      (view-mode 1))))
+
+(defun equinox-current-buffer (additional-equinox-arguments)
+  "Invoke the equinox model finder on the current buffer. The filename of
+the current buffer will be used as the file argument;
+ADDITIONAL-EQUINOX-ARGUMENTS, a string, will be the other arguments
+given to equinox.  The filename argument comes last, after
+ADDITIONAL-EQUINOX-ARGUMENTS."
+  (interactive "sAdditional flags with which equinox will be invoked, if any: ")
+  (save-buffer)
+  (let ((equinox-buffer (get-buffer-create "*equinox*"))
+	(tptp-file (buffer-file-name)))
+    (save-excursion
+      (switch-to-buffer equinox-buffer)
+      (erase-buffer)
+      (insert "Calling equinox like this:")
+      (newline 2)
+      (if (empty-string? additional-equinox-arguments)
+	  (insert "  " *equinox-program* " " tptp-file)
+	  (insert "  " *equinox-program* " " additional-equinox-arguments " " tptp-file))
+      (newline 2)
+      (insert "Results:")
+      (newline)
+      (insert +report-separator+)
+      (newline)
+      (if (empty-string? additional-equinox-arguments)
+	  (call-process *equinox-program* nil t t tptp-file)
+	  (call-process *equinox-program* nil t t additional-equinox-arguments tptp-file))
       (setf buffer-read-only t)
       (view-mode 1))))
 
