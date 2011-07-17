@@ -169,7 +169,8 @@ after ADDITIONAL-VAMPIRE-ARGUMENTS."
       (if (empty-string? additional-vampire-arguments)
 	  (call-process *vampire-program* tptp-file t t)
 	  (call-process *vampire-program* tptp-file t t additional-vampire-arguments))
-      (setf buffer-read-only t))))
+      (setf buffer-read-only t)
+      (view-mode 1))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; TPTP minor mode
