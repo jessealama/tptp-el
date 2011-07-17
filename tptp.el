@@ -268,6 +268,18 @@ If ARG is a negative integer, disable view-proof-mode; otherwise, enable this mo
   (use-local-map view-proof-map))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Model view mode
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun view-model-mode (&optional arg)
+  "Major mode for viewing models.
+
+If ARG is a negative integer, disable view-model-mode; otherwise, enable this mode."
+  (interactive "p")
+  (kill-all-local-variables)
+  (use-local-map view-proof-map))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; The end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
