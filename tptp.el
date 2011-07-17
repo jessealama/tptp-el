@@ -98,11 +98,16 @@ vampire can be found.")
 (defvar view-proof-mode-map nil "Keymap used by view-proof mode.")
 
 (unless view-proof-mode-map
+
   (setf view-proof-mode-map (make-sparse-keymap))
+  
+  ; Navigation
   (define-key view-proof-mode-map " " 'forward-page)
   (define-key view-proof-mode-map "f" 'forward-page)
   (define-key view-proof-mode-map "DEL" 'backward-page)
   (define-key view-proof-mode-map "b" 'backward-page)
+
+  ; Help
   (define-key view-proof-mode-map "h" 'describe-mode)
   (define-key view-proof-mode-map "H" 'describe-mode)
   (define-key view-proof-mode-map "?" 'describe-mode))
