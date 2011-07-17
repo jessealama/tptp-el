@@ -159,10 +159,13 @@ If ARG is a negative integer, disable `view-model-mode'; otherwise, enable this 
 ;;; current buffer
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defconst +proof-buffer-name+ "*proof*"
+  "The name of the buffer that stores proofs.")
+
 (defun run-prover (prover additional-arguments)
   (interactive (format "sAdditional flags with which %s will be invoked, if any: " prover))
   (save-buffer)
-  (let* ((prover-buffer (get-buffer-create "*proof*"))
+  (let* ((prover-buffer (get-buffer-create +proof-buffer-name+))
 	 (tptp-file-absolute-path (buffer-file-name))
 	 (tptp-file-directory (file-name-directory tptp-file-absolute-path))
 	 (tptp-file-only-filename (file-name-nondirectory tptp-file-absolute-path))
