@@ -92,6 +92,50 @@ environment variable will be consulted to determine where
 vampire can be found.")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Proof viewing mode
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defvar view-proof-mode-map nil "Keymap used by view-proof mode.")
+
+(unless view-proof-mode-map
+  (setf view-proof-mode-map (make-sparse-keymap))
+  (define-key view-proof-mode-map " " 'forward-page)
+  (define-key view-proof-mode-map "f" 'forward-page)
+  (define-key view-proof-mode-map "DEL" 'backward-page)
+  (define-key view-proof-mode-map "b" 'backward-page))
+
+(defun view-proof-mode (&optional arg)
+  "Major mode for viewing proofs.
+
+If ARG is a negative integer, disable view-proof-mode; otherwise, enable this mode."
+  (interactive "p")
+  (kill-all-local-variables)
+  (use-local-map view-proof-mode-map)
+  (setf major-mode 'view-proof-mode
+	mode-name "View-Proof"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Model view mode
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defvar view-model-mode-map nil "Keymap used by view-model mode.")
+
+(unless view-model-mode-map
+  (setf view-model-mode-map (make-sparse-keymap))
+  (define-key view-model-mode-map " " 'forward-page)
+  (define-key view-model-mode-map "f" 'forward-page)
+  (define-key view-model-mode-map "DEL" 'backward-page)
+  (define-key view-model-mode-map "b" 'backward-page))
+
+(defun view-model-mode (&optional arg)
+  "Major mode for viewing models.
+
+If ARG is a negative integer, disable view-model-mode; otherwise, enable this mode."
+  (interactive "p")
+  (kill-all-local-variables)
+  (use-local-map view-model-mode-map))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Invoking a theorem prover or model finder on the (contents of the)
 ;;; current buffer
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -123,7 +167,7 @@ ADDITIONAL-E-ARGUMENTS."
 	  (call-process *eprover-program* nil t t tptp-file)
 	  (call-process *eprover-program* nil t t additional-e-arguments tptp-file))
       (setf buffer-read-only t)
-      (view-mode 1))))
+      (view-proof-mode 1))))
 
 (defun paradox-current-buffer (additional-paradox-arguments)
   "Invoke the paradox model finder on the current buffer. The filename of
@@ -212,7 +256,7 @@ after ADDITIONAL-VAMPIRE-ARGUMENTS."
 	  (call-process *vampire-program* tptp-file t t)
 	  (call-process *vampire-program* tptp-file t t additional-vampire-arguments))
       (setf buffer-read-only t)
-      (view-mode 1))))
+      (view-proof-mode 1))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; TPTP minor mode
@@ -254,40 +298,6 @@ after ADDITIONAL-VAMPIRE-ARGUMENTS."
   :global nil
   :group 'tptp
   (tptp-menu))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Proof viewing mode
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defvar view-proof-mode-map nil "Keymap used by view-proof mode.")
-
-(unless view-proof-mode-map
-  (setf view-proof-mode-map (make-sparse-keymap))
-  (define-key view-proof-mode-map "<space>" 'forward-page)
-  (define-key view-proof-mode-map "<backspace>" 'backward-page)
-  (define-key view-proof-mode-map "b" 'backward-page))
-
-(defun view-proof-mode (&optional arg)
-  "Major mode for viewing proofs.
-
-If ARG is a negative integer, disable view-proof-mode; otherwise, enable this mode."
-  (interactive "p")
-  (kill-all-local-variables)
-  (use-local-map view-proof-map)
-  (setf major-mode 'view-proof-mode
-	mode-name "View-Proof"))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Model view mode
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defun view-model-mode (&optional arg)
-  "Major mode for viewing models.
-
-If ARG is a negative integer, disable view-model-mode; otherwise, enable this mode."
-  (interactive "p")
-  (kill-all-local-variables)
-  (use-local-map view-proof-map))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; The end
