@@ -27,6 +27,23 @@
   "======================================================================"
   "The separator to use when generating reports.")
 
+(defconst +proof-buffer-name+ "*proof*"
+  "The name of the buffer that stores proofs.")
+
+;;; The next four variables will be made buffer local later on.
+
+(defvar proof-absolute-path nil
+  "The absolute path of the file for which we have a deduction.")
+
+(defvar proof-prover nil
+  "The prover that was used to obtain a proof.")
+
+(defvar proof-time nil
+  "The time at which we found a proof.")
+
+(defvar proof-text nil
+  "The text of the TPTP file for which we've found a proof.")
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Utilities
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -158,9 +175,6 @@ If ARG is a negative integer, disable `view-model-mode'; otherwise, enable this 
 ;;; Invoking a theorem prover or model finder on the (contents of the)
 ;;; current buffer
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defconst +proof-buffer-name+ "*proof*"
-  "The name of the buffer that stores proofs.")
 
 (defun run-prover (prover additional-arguments)
   (interactive (format "sAdditional flags with which %s will be invoked, if any: " prover))
