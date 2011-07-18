@@ -333,16 +333,16 @@ If ARG is a negative integer, disable `view-model-mode'; otherwise, enable this 
 ;;; current buffer
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defun tptp-comment-text (text)
+  (replace-regexp-in-string "[\n]" "\n% " text))
+
 (defun run-prover (prover additional-arguments)
   (interactive (format "sAdditional flags with which %s will be invoked, if any: " prover))
   (save-buffer)
   (let* ((prover-buffer (get-buffer-create +proof-buffer-name+))
 	 (tptp-file-absolute-path (buffer-file-name))
 	 (text (buffer-substring-no-properties (point-min) (point-max)))
-	 (commented-out-text (format "%% %s"
-				     (replace-regexp-in-string "[\n]"
-							       "\n%"
-							       text))))
+	 (commented-out-text (format "%% %s" (tptp-comment-text text))))
     (switch-to-buffer prover-buffer)
 
     ;; Kill everything that might already be here
