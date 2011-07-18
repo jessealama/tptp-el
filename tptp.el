@@ -182,6 +182,10 @@ vampire can be found.")
   "[input]"
   "A marker used by vampire to indicate an input assumption.")
 
+(defun view-proof-list-principles-for-vampire ()
+  "List the principles used in a vampire proof."
+  (occur "\\\[input\\\]\\\|\\\[negated conjecture\\\]" 0))
+
 (defun view-proof-list-principles ()
   "Show the assumptions and any conjectures used in the proof."
   (interactive)
@@ -190,7 +194,7 @@ vampire can be found.")
     (error "Unable to list proof principles outside of a proof buffer."))
   (let ((prover (buffer-local-value 'proof-prover (current-buffer))))
     (cond ((string= prover "vampire")
-	   (occur "\\\[input\\\]\\\|\\\[negated conjecture\\\]" 0))
+	   (view-proof-list-principles-for-vampire))
 	  (t
 	   (message "We don't know how to interpret the proof output of %s; sorry" prover)))))
 
