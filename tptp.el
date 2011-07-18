@@ -126,6 +126,7 @@ vampire can be found.")
 
   ; Saving proofs
   (define-key view-proof-mode-map "s" 'view-proof-save-deduction)
+  (define-key view-proof-mode-map "S" 'view-proof-save-deduction)
 
   ; Help
   (define-key view-proof-mode-map "h" 'describe-mode)
