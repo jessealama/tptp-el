@@ -112,7 +112,7 @@ eprover can be found."
 (defcustom *paradox-program* "paradox"
   "The paradox model finder program.
 
-That value of this variable can be either a path or a
+The value of this variable can be either a path or a
 program name.  If it is not an absolute path, your PATH
 environment variable will be consulted to determine where
 paradox can be found."
@@ -123,7 +123,7 @@ paradox can be found."
 (defcustom *mace4-program* "mace4"
   "The MACE4 model finder program.
 
-That value of this variable can be either a path or a
+The value of this variable can be either a path or a
 program name.  If it is not an absolute path, your PATH
 environment variable will be consulted to determine where
 MACE4 can be found."
@@ -134,7 +134,7 @@ MACE4 can be found."
 (defcustom *equinox-program* "equinox"
   "The equinox theorem prover program.
 
-That value of this variable can be either a path or a
+The value of this variable can be either a path or a
 program name.  If it is not an absolute path, your PATH
 environment variable will be consulted to determine where
 equinox can be found."
@@ -145,7 +145,7 @@ equinox can be found."
 (defcustom *vampire-program* "vampire"
   "The name of the vampire theorem prover.
 
-That value of this variable can be either a path or a
+The value of this variable can be either a path or a
 program name.  If it is not an absolute path, your PATH
 environment variable will be consulted to determine where
 vampire can be found.")
