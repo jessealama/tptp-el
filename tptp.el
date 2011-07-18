@@ -8,6 +8,7 @@
 ;; Keywords: TPTP, automated theorem prover, automated theorem proving,
 ;;   ATP, LADR, prover9, eprover, vampire
 ;; Compatibility: GNU Emacs: 23.x
+;; Version: 0.1
 ;; 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
