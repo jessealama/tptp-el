@@ -133,6 +133,14 @@ MACE4 can be found."
   :group 'tptp
   :type '(string))
 
+(defcustom *prover9-program* "prover9"
+  "The prover9 theorem prover.
+
+The value of this variable can be either a path or a program
+name.  If it is not an absolute path, your PATH environment
+variable will be consulted to determine where prover9 can be
+found.")
+
 (defcustom *equinox-program* "equinox"
   "The equinox theorem prover program.
 
@@ -538,6 +546,15 @@ given to paradox.  The filename argument comes last, after
 ADDITIONAL-PARADOX-ARGUMENTS."
   (interactive "sAdditional flags with which paradox will be invoked, if any: ")
   (run-prover *paradox-program* additional-paradox-arguments))
+
+(defun prover9-current-buffer (additional-prover9-arguments)
+  "Invoke the prover9 theorem prover on the current buffer. The filename of
+the current buffer will be used as the file argument;
+ADDITIONAL-PROVER9-ARGUMENTS, a string, will be the other arguments
+given to prover9.  The filename argument comes last, after
+ADDITIONAL-PROVER9-ARGUMENTS."
+  (interactive "sAdditional flags with which prover9 will be invoked, if any: ")
+  (run-prover *prover9-program* additional-prover9-arguments))
 
 (defun mace4-current-buffer (additional-mace-arguments)
   "Invoke the MACE4 model finder on the current buffer. The filename of
