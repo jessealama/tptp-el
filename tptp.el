@@ -35,6 +35,16 @@
 ;; For slightly better performance of the TPTP Emacs Lisp package,
 ;; byte compile tptp.el.
 ;;
+;; To automatically load tptp-mode when editing files with a certain
+;; extension, add something like this to your Emacs initialization
+;; file:
+;;
+;;   (add-to-list 'auto-mode-alist '("\\.ax\\'" . tptp-mode))
+;;
+;; Doing this will set up files that have the ".ax" extension to
+;; automatically load tptp-mode.  You can do this for multiple
+;; extensions (e.g., ".p", ".ax", etc).
+;;
 ;; HACKING
 ;;
 ;; You can follow development by going to the source homepage at
