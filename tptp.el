@@ -206,7 +206,9 @@ vampire can be found.")
 
 (defun mark-up-proof-for-prover (prover)
   (when (string= prover *vampire-program*)
-    (mark-up-vampire-proof)))
+    (mark-up-vampire-proof))
+  (when (string= prover *eprover-program*)
+    (mark-up-eprover-proof)))
 
 (defun mark-up-vampire-negated-conjecture ()
   (save-excursion
@@ -241,6 +243,9 @@ vampire can be found.")
   ;; find the negated conjecture, and mark it up
   (mark-up-vampire-negated-conjecture)
   (mark-up-vampire-input-assumptions))
+
+(defun mark-up-eprover-proof ()
+  "Mark up a proof output by the E prover.")
 
 (define-derived-mode view-proof-mode
   view-mode
