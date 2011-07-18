@@ -188,8 +188,11 @@ vampire can be found.")
   ;; sanity check: we are in a proof buffer
   (unless (string= (buffer-name) +proof-buffer-name+)
     (error "Unable to list proof principles outside of a proof buffer."))
-  (when (string= (buffer-local-value 'proof-prover (current-buffer)) "vampire")
-    (occur "\\\[input\\\]\\\|\\\[negated conjecture\\\]" 0)))
+  (let ((prover (buffer-local-value 'proof-prover (current-buffer))))
+    (cond ((string= prover "vampire")
+	   (occur "\\\[input\\\]\\\|\\\[negated conjecture\\\]" 0))
+	  (t
+	   (message "We don't know how to interpret the proof output of %s; sorry" prover)))))
 
 (defun mark-up-vampire-proof ()
   "Mark up a Vampire deduction."
