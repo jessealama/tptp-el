@@ -95,7 +95,7 @@
 ;;; Names of theorem provers and model finders
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defcustom *eprover-program* "eprover"
+(defcustom *eprover-program* "eprove"
   "The E theorem prover program.
 
 That value of this variable can be either a path or a
