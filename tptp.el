@@ -265,8 +265,38 @@ Here is another example:
   (mark-up-vampire-negated-conjecture)
   (mark-up-vampire-input-assumptions))
 
+(defun mark-up-eprover-negated-conjecture ()
+  (save-excursion
+    (goto-char (point-min))
+    (search-forward +report-separator+ nil t 2) ;; find two record separators
+    (let ((neg-conj-pos (search-forward +eprover-negated-conjecture-marker+ nil t)))
+      (when neg-conj-pos
+	(let ((neg-conj-begin (- neg-conj-pos
+				 (length +eprover-negated-conjecture-marker+))))
+	  (beginning-of-line)
+	  (re-search-forward "^[ ]*[0-9]+ : neg : ") ;; E proof lines look like this
+	  (put-text-property (point) neg-conj-begin
+			     'font-lock-face 'cursor))))))
+
+(defun mark-up-eprover-input-assumptions ()
+  (save-excursion
+    (goto-char (point-min))
+    (let ((assumption-pos (search-forward +eprover-assumption-marker+ nil t)))
+      (while assumption-pos
+	(let ((assumption-marker-begin (- assumption-pos
+					  (length +eprover-assumption-marker+))))
+	  (beginning-of-line)
+	  (re-search-forward "^[ ]*[0-9]+ : [a-z]* : ")
+	  (put-text-property (point) assumption-marker-begin
+			     'font-lock-face 'custom-changed-face)
+	  (end-of-line)
+	  (setf assumption-pos
+		(search-forward +eprover-assumption-marker+ nil t)))))))
+
 (defun mark-up-eprover-proof ()
-  "Mark up a proof output by the E prover.")
+  "Mark up a proof output by the E prover."
+  (mark-up-eprover-negated-conjecture)
+  (mark-up-eprover-input-assumptions))
 
 (define-derived-mode view-proof-mode
   view-mode
