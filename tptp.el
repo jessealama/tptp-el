@@ -138,6 +138,9 @@ vampire can be found.")
   (define-key view-proof-mode-map "s" 'view-proof-save-deduction)
   (define-key view-proof-mode-map "S" 'view-proof-save-deduction)
 
+  ; Inspecting proofs
+  (define-key view-proof-mode-map "l" 'view-proof-list-principles)
+
   ; Help
   (define-key view-proof-mode-map "h" 'describe-mode)
   (define-key view-proof-mode-map "H" 'describe-mode)
@@ -150,6 +153,12 @@ vampire can be found.")
 (defconst +vampire-assumption-marker+
   "[input]"
   "A marker used by vampire to indicate an input assumption.")
+
+(defun view-proof-list-principles ()
+  "Show the assumptions and any conjectures used in the proof."
+  (interactive)
+  (when (string= (buffer-local-value 'proof-prover (current-buffer)) "vampire")
+    (occur "\\\[input\\\]\\\|\\\[negated conjecture\\\]" 0)))
 
 (defun mark-up-vampire-proof ()
   "Mark up a Vampire deduction."
