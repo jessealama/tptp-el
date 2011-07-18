@@ -240,7 +240,8 @@ vampire can be found.")
   (use-local-map view-proof-mode-map)
   (setf major-mode 'view-proof-mode
 	mode-name (format "View-Proof[%s]" prover))
-  (mark-up-proof-for-prover prover))
+  (mark-up-proof-for-prover prover)
+  (message "Viewing a proof by %s; type 'h' for help" prover))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Saving deductions
