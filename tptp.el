@@ -238,14 +238,15 @@ vampire can be found.")
 	      (message "OK, refusing to overwrite '%s'" deduction-path))
 	  (setf should-we-write? t))
 	(when should-we-write?
-	  (save-excursion
-	    (let ((saved-deduction-buf (find-file-noselect deduction-path))
-		  (deduction (buffer-substring-no-properties (point-min)
-							     (point-max))))
+	  (let ((saved-deduction-buf (find-file-noselect deduction-path))
+		(deduction (buffer-substring-no-properties (point-min)
+							   (point-max))))
+	    (save-excursion
 	      (switch-to-buffer saved-deduction-buf)
 	      (erase-buffer) ;; there might have been stuff there before
 	      (insert deduction)
-	      (save-buffer nil)))
+	      (save-buffer nil))
+	    (kill-buffer saved-deduction-buf))
 	  (message "Proof to %s" deduction-path)))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
