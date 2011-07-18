@@ -8,6 +8,8 @@ you.
 Installation
 ----------
 
+## Emacs ##
+
 Currently, the TPTP Emacs Lisp package consists of a single Emacs
 Lisp file, namely this one, tptp.el.  Simply put tptp.el in a
 directory (I recommend "~/share/emacs/site-lisp/tptp", but it
@@ -31,6 +33,19 @@ file:
 Doing this will set up files that have the ".ax" extension to
 automatically load tptp-mode.  You can do this for multiple
 extensions (e.g., ".p", ".ax", etc).
+
+## SubEthaEdit ##
+
+There is currently only one prover supported for SubEthaEdit: vampire.
+To install SubEthaEdit support for vampire:
+
+1. Make a bin subdirectory of your home directory, if it doesn't
+already exist.
+2. Copy run-vampire.sh to ~/bin, and make the script executable.
+3. Copy run-vampire.applescript to ~/Library/Application Support/SubEthaEdit/Scripts.
+
+Next time you start SubEthaEdit, you should see, in the Scripts menu,
+an item that says "Run Vampire".  Try it out!
 
 Hacking
 -------
