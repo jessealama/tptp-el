@@ -184,9 +184,31 @@ vampire can be found.")
   "[negated conjecture]"
   "A marker used by vampire to indicate the negation of a conjecture.")
 
+(defconst +eprover-negated-conjecture-marker+
+  " : assume_negation("
+  "A marker used by the E prover to indicate the negation of a conjecture.
+
+Here is an example:
+
+    43 : neg : ~(![X1]:![X8]:(((object(X1)&object(X8))&?[X3]:(point(X3)&a_equal_at(X1,X8,X3)))=>equal(X1, X8))) : assume_negation(42)
+")
+
 (defconst +vampire-assumption-marker+
   "[input]"
   "A marker used by vampire to indicate an input assumption.")
+
+(defconst +eprover-assumption-marker+
+  " : initial("
+  "A marker used by the E prover to indicate an input assumption.
+
+Here is an example:
+
+      7 :  : ![X1]:![X2]:![X3]:(enc_at(X1,X2,X3)=>((object(X1)&property(X2))&point(X3))) : initial(\"logical.ax\", sort_enc_at)
+
+Here is another example:
+
+     42 : conj : ![X1]:![X8]:(((object(X1)&object(X8))&?[X3]:(point(X3)&a_equal_at(X1,X8,X3)))=>equal(X1, X8)) : initial(\"<stdin>\", possibly_a_equal_at_implies_identity)
+")
 
 (defun view-proof-list-principles-for-vampire ()
   "List the principles used in a vampire proof."
