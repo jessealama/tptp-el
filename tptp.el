@@ -201,6 +201,10 @@ vampire can be found.")
 	  (t
 	   (message "We don't know how to interpret the proof output of %s; sorry" prover)))))
 
+(defun mark-up-proof-for-prover (prover)
+  (when (string= prover "vampire")
+    (mark-up-vampire-proof)))
+
 (defun mark-up-vampire-proof ()
   "Mark up a Vampire deduction."
   ;; find the negated conjecture, and mark it up
@@ -236,8 +240,7 @@ vampire can be found.")
   (use-local-map view-proof-mode-map)
   (setf major-mode 'view-proof-mode
 	mode-name (format "View-Proof[%s]" prover))
-  (when (string= prover "vampire")
-    (mark-up-vampire-proof)))
+  (mark-up-proof-for-prover prover))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Saving deductions
