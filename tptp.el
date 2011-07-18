@@ -169,6 +169,9 @@ vampire can be found.")
   ; Inspecting proofs
   (define-key view-proof-mode-map "l" 'view-proof-list-principles)
 
+  ; Bailing
+  (define-key view-proof-mode-map "q" 'bury-buffer)
+
   ; Help
   (define-key view-proof-mode-map "h" 'describe-mode)
   (define-key view-proof-mode-map "H" 'describe-mode)
