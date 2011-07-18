@@ -1,3 +1,5 @@
+-- This script uses run-vampire.sh; it assumes that this script is under the bin subdirectory of your home directory.
+
 -- see settings
 on seescriptsettings()
 	
@@ -45,7 +47,7 @@ tell application "SubEthaEdit"
 	set tptpPath to (path of front document)
 end tell
 
-set shellresult to do shell script ("/Users/alama/sources/tptp-el/run-vampire.sh " & tptpPath) without altering line endings
+set shellresult to do shell script ("~/bin/run-vampire.sh " & tptpPath) without altering line endings
 
 tell application "SubEthaEdit"
 	set the clipboard to savedClipboard
