@@ -122,7 +122,6 @@ vampire can be found.")
   (define-key view-proof-mode-map " " 'forward-page)
   (define-key view-proof-mode-map "f" 'forward-page)
   (define-key view-proof-mode-map "DEL" 'backward-page)
-  (define-key view-proof-mode-map "b" 'backward-page)
 
   ; Saving proofs
   (define-key view-proof-mode-map "s" 'view-proof-save-deduction)
