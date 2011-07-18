@@ -240,7 +240,6 @@ vampire can be found.")
 
 (defun mark-up-vampire-proof ()
   "Mark up a Vampire deduction."
-  ;; find the negated conjecture, and mark it up
   (mark-up-vampire-negated-conjecture)
   (mark-up-vampire-input-assumptions))
 
