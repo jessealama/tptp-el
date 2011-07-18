@@ -405,7 +405,8 @@ If ARG is a negative integer, disable `view-model-mode'; otherwise, enable this 
     (if (empty-string? additional-arguments)
 	(call-process prover tptp-file-absolute-path t t)
       (call-process prover tptp-file-absolute-path t t additional-arguments))
-    (view-proof-mode prover)
+    (view-proof-mode)
+    (turn-on-view-proof-mode prover)
     (setf buffer-read-only t)
 
     ;; Set up buffer-local variables for later use
