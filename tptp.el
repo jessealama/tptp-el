@@ -208,9 +208,7 @@ vampire can be found.")
   (when (string= prover "vampire")
     (mark-up-vampire-proof)))
 
-(defun mark-up-vampire-proof ()
-  "Mark up a Vampire deduction."
-  ;; find the negated conjecture, and mark it up
+(defun mark-up-vampire-negated-conjecture ()
   (save-excursion
     (goto-char (point-min))
     (search-forward +report-separator+ nil t 2) ;; find two record separators
@@ -221,7 +219,9 @@ vampire can be found.")
 	  (beginning-of-line)
 	  (re-search-forward "^[0-9]+\. ") ;; vampire proof lines look like this
 	  (put-text-property (point) neg-conj-begin
-			     'font-lock-face 'cursor)))))
+			     'font-lock-face 'cursor))))))
+
+(defun mark-up-vampire-input-assumptions ()
   (save-excursion
     (goto-char (point-min))
     (let ((assumption-pos (search-forward +vampire-assumption-marker+ nil t)))
@@ -235,6 +235,12 @@ vampire can be found.")
 	  (end-of-line)
 	  (setf assumption-pos
 		(search-forward +vampire-assumption-marker+ nil t)))))))
+
+(defun mark-up-vampire-proof ()
+  "Mark up a Vampire deduction."
+  ;; find the negated conjecture, and mark it up
+  (mark-up-vampire-negated-conjecture)
+  (mark-up-vampire-input-assumptions))
 
 (define-derived-mode view-proof-mode
   view-mode
