@@ -5,7 +5,7 @@ Do you work with formal proofs in plain first-order logic?  In
 Emacs?  If you said "yes" to both questions, this package is for
 you.
 
-INSTALLATION
+Installation
 ----------
 
 Currently, the TPTP Emacs Lisp package consists of a single Emacs
@@ -32,7 +32,7 @@ Doing this will set up files that have the ".ax" extension to
 automatically load tptp-mode.  You can do this for multiple
 extensions (e.g., ".p", ".ax", etc).
 
-HACKING
+Hacking
 -------
 
 You can follow development by going to the source homepage at
