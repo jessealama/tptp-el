@@ -205,7 +205,7 @@ vampire can be found.")
 	   (message "We don't know how to interpret the proof output of %s; sorry" prover)))))
 
 (defun mark-up-proof-for-prover (prover)
-  (when (string= prover "vampire")
+  (when (string= prover *vampire-program*)
     (mark-up-vampire-proof)))
 
 (defun mark-up-vampire-negated-conjecture ()
