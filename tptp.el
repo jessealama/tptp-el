@@ -30,6 +30,8 @@
 ;;   (add-to-list 'load-path <path to the directory in which you put tptp.el>)
 ;;   (require 'tptp)
 ;;
+;; Make sure the path is double quoted, e.g., "/Users/jesse".
+;;
 ;; For slightly better performance of the TPTP Emacs Lisp package,
 ;; byte compile tptp.el.
 ;;
