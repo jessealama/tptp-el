@@ -185,6 +185,9 @@ vampire can be found.")
 (defun view-proof-list-principles ()
   "Show the assumptions and any conjectures used in the proof."
   (interactive)
+  ;; sanity check: we are in a proof buffer
+  (unless (string= (buffer-name) +proof-buffer-name+)
+    (error "Unable to list proof principles outside of a proof buffer."))
   (when (string= (buffer-local-value 'proof-prover (current-buffer)) "vampire")
     (occur "\\\[input\\\]\\\|\\\[negated conjecture\\\]" 0)))
 
