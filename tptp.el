@@ -149,7 +149,69 @@ If ARG is a negative integer, disable `view-proof-mode'; otherwise, enable this 
 
 (defun view-proof-save-deduction ()
   "Save the results of the current proof to a file."
-  (interactive))
+
+  (interactive)
+
+  ;; sanity checks: we are in the proof buffer
+  (unless (string= (buffer-name) +proof-buffer-name+)
+    (error "We are not in the proof buffer; saving deductions doesn't make sense."))
+  (let* ((proof-buffer (current-buffer))
+	 (proof-prover (buffer-local-value 'proof-prover proof-buffer))
+	 (proof-absolute-path (buffer-local-value 'proof-absolute-path proof-buffer))
+	 (proof-time (buffer-local-value 'proof-time proof-buffer))
+	 (proof-text (buffer-local-value 'proof-text proof-buffer)))
+
+    ;; sanity checks: we know the file and prover whose output the
+    ;; proof buffer is storing, the text of that file, and the time
+    ;; when the deduction was found
+    (unless proof-prover
+      (error "The proof buffer somehow does not know the prover whose output it records."))
+    (unless proof-absolute-path
+      (error "The proof buffer somehow does not know the absolute path of the file on which %s was invoked" proof-prover))
+    (unless proof-time
+      (error "The proof buffer somehow does not know the time at which %s was invoked" proof-prover))
+    (unless proof-text
+      (error "The proof buffer somehow does not know the text on which %s was invoked" proof-prover))
+
+  ;; we know we have sensible values; we can continue
+
+  (let* ((tptp-directory (file-name-directory proof-absolute-path))
+	 (tptp-only-filename (file-name-nondirectory proof-absolute-path))
+	 (tptp-basename (file-name-sans-extension tptp-only-filename))
+	 (commented-out-text (format "% %s"
+				     (replace-regexp-in-string "\n"
+							       "\n% "
+							       proof-text))))
+    (destructuring-bind (seconds minutes hour day month year dow dst zone)
+	(decode-time proof-time)
+      ;; ignore SECONDS, DOW, DST, ZONE
+      (let ((deduction-path (format "%s%s-%s-%04d-%02d-%02d-%02d-%02d"
+				    (file-name-as-directory tptp-directory)
+				    tptp-basename
+				    proof-prover
+				    year
+				    month
+				    day
+				    hour
+				    minutes))
+	    (should-we-write? nil))
+	(if (file-exists-p deduction-path)
+	    (if (yes-or-no-p (format "There is already at proof saved under '%s'; overwrite it? " deduction-path))
+		(if (file-writable-p deduction-path)
+		    (setf should-we-write? t)       
+		  (error "We cannot write to %s" deduction-path))
+	      (message "OK, refusing to overwrite '%s'" deduction-path))
+	  (setf should-we-write? t))
+	(when should-we-write?
+	  (let ((saved-deduction-buf (find-file-noselect deduction-path))
+		(deduction (buffer-substring-no-properties (point-min)
+							   (point-max))))
+	    (switch-to-buffer saved-deduction-buf)
+	    (erase-buffer) ;; there might have been stuff there before
+	    (insert commented-out-text)
+	    (newline)
+	    (insert deduction)
+	    (save-buffer nil))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Model view mode
@@ -182,41 +244,34 @@ If ARG is a negative integer, disable `view-model-mode'; otherwise, enable this 
   (save-buffer)
   (let* ((prover-buffer (get-buffer-create +proof-buffer-name+))
 	 (tptp-file-absolute-path (buffer-file-name))
-	 (tptp-file-directory (file-name-directory tptp-file-absolute-path))
-	 (tptp-file-only-filename (file-name-nondirectory tptp-file-absolute-path))
-	 (tptp-file-basename (file-name-sans-extension tptp-file-only-filename)))
-    (save-excursion
-      (switch-to-buffer prover-buffer)
+	 (text (buffer-substring-no-properties (point-min) (point-max))))
+    (switch-to-buffer prover-buffer)
 
-      ;; Kill everything that might already be here
-      (erase-buffer)
+    ;; Kill everything that might already be here
+    (erase-buffer)
+    
+    ;; Now start inserting content into the buffer
+    (insert (format "Calling %s like this:" prover))
+    (newline 2)
+    (if (empty-string? additional-arguments)
+	(insert "  " prover " < " tptp-file-absolute-path)
+      (insert "  " prover " " additional-arguments " < " tptp-file-absolute-path))
+    (newline 2)
+    (insert "Results:")
+    (newline)
+    (insert +report-separator+)
+    (newline)
+    (if (empty-string? additional-arguments)
+	(call-process prover tptp-file-absolute-path t t)
+      (call-process prover tptp-file-absolute-path t t additional-arguments))
+    (setf buffer-read-only t)
+    (view-proof-mode 1)
 
-      ;; Set up buffer-local variables for later use
-      (make-local-variable 'proof-directory)
-      (make-local-variable 'proof-absolute-path)
-      (make-local-variable 'proof-basename)
-      (make-local-variable 'proof-prover)
-      (setf proof-directory tptp-file-directory
-	    proof-absolute-path tptp-file-absolute-path
-	    proof-basename tptp-file-basename
-	    proof-prover prover)
-
-      ;; Now start inserting content into the buffer
-      (insert (format "Calling %s like this:" prover))
-      (newline 2)
-      (if (empty-string? additional-arguments)
-	  (insert "  " prover " < " tptp-file-absolute-path)
-	  (insert "  " prover " " additional-arguments " < " tptp-file-absolute-path))
-      (newline 2)
-      (insert "Results:")
-      (newline)
-      (insert +report-separator+)
-      (newline)
-      (if (empty-string? additional-arguments)
-	  (call-process prover tptp-file-absolute-path t t)
-	  (call-process prover tptp-file-absolute-path t t additional-arguments))
-      (setf buffer-read-only t)
-      (view-proof-mode 1))))
+    ;; Set up buffer-local variables for later use
+    (set (make-local-variable 'proof-absolute-path) tptp-file-absolute-path)
+    (set (make-local-variable 'proof-prover) prover)
+    (set (make-local-variable 'proof-time) (current-time))
+    (set (make-local-variable 'proof-text) text)))
 
 (defun equinox-current-buffer (additional-equinox-arguments)
   "Invoke the equinox model finder on the current buffer. The filename of
