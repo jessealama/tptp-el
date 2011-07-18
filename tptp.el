@@ -89,6 +89,17 @@ paradox can be found."
   :group 'tptp
   :type '(string))
 
+(defcustom *mace4-program* "mace4"
+  "The MACE4 model finder program.
+
+That value of this variable can be either a path or a
+program name.  If it is not an absolute path, your PATH
+environment variable will be consulted to determine where
+MACE4 can be found."
+  :tag "MACE4 program"
+  :group 'tptp
+  :type '(string))
+
 (defcustom *equinox-program* "equinox"
   "The equinox theorem prover program.
 
@@ -352,6 +363,15 @@ ADDITIONAL-PARADOX-ARGUMENTS."
   (interactive "sAdditional flags with which paradox will be invoked, if any: ")
   (run-prover *paradox-program* additional-paradox-arguments))
 
+(defun mace4-current-buffer (additional-mace-arguments)
+  "Invoke the MACE4 model finder on the current buffer. The filename of
+the current buffer will be used as the file argument;
+ADDITIONAL-MACE-ARGUMENTS, a string, will be the other arguments
+given to MACE4.  The filename argument comes last, after
+ADDITIONAL-MACE4-ARGUMENTS."
+  (interactive "sAdditional flags with which MACE4 will be invoked, if any: ")
+  (run-prover *mace4-program* additional-mace-arguments))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; TPTP minor mode
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -374,6 +394,9 @@ ADDITIONAL-PARADOX-ARGUMENTS."
 	 '("Models"
 	   ["Run paradox on the current buffer"
 	    (call-interactively 'paradox-current-buffer)
+	    t]
+	   ["Run MACE4 on the current buffer"
+	    (call-interactively 'mace4-current-buffer)
 	    t])
 	 "-"
 	 ["Customize TPTP mode" (customize-group 'tptp) t]))
