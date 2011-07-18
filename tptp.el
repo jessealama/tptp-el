@@ -390,6 +390,9 @@ ADDITIONAL-MACE4-ARGUMENTS."
 	    t]
 	   ["Run Vampire on the current buffer"
 	    (call-interactively 'vampire-current-buffer)
+	    t]
+	   ["Run Equinox on the current buffer"
+	    (call-interactively 'equinox-current-buffer)
 	    t])
 	 '("Models"
 	   ["Run paradox on the current buffer"
