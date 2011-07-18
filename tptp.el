@@ -214,6 +214,10 @@ Here is another example:
   "List the principles used in a vampire proof."
   (occur "\\\[input\\\]\\\|\\\[negated conjecture\\\]" 0))
 
+(defun view-proof-list-principles-for-eprover ()
+  "List the principles used in an E proof."
+  (occur "\\\( : initial(\\\)\\\|\\\( : assume_negation(\\\)"))
+
 (defun view-proof-list-principles ()
   "Show the assumptions and any conjectures used in the proof."
   (interactive)
@@ -223,6 +227,8 @@ Here is another example:
   (let ((prover (buffer-local-value 'proof-prover (current-buffer))))
     (cond ((string= prover *vampire-program*)
 	   (view-proof-list-principles-for-vampire))
+	  ((string= prover *eprover-program*)
+	   (view-proof-list-principles-for-eprover))
 	  (t
 	   (message "We don't know how to interpret the proof output of %s; sorry" prover)))))
 
