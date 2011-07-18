@@ -410,7 +410,7 @@ Help:
 	      (insert deduction)
 	      (save-buffer nil))
 	    (kill-buffer saved-deduction-buf))
-	  (message "Proof to %s" deduction-path)))))))
+	  (message "Proof save to %s" deduction-path)))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Model view mode
