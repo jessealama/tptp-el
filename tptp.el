@@ -12,6 +12,34 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;; Commentary:
+;;
+;; Do you work with formal proofs in plain first-order logic?  In
+;; emacs?  If you said "yes" to both questions, this package is for
+;; you.
+;;
+;; INSTALLATION
+;;
+;; Currently, the TPTP emacs lisp package consists of a single emacs
+;; lisp file, namely this one, tptp.el.  Simply put tptp.el in a
+;; directory (I recommend "~/share/emacs/site-lisp/tptp", but it
+;; doesn't really matter), and in your emacs initialization file
+;; (generally the file called ".emacs" in your home directory), add
+;; the form
+;;
+;;   (add-to-list 'load-path <path to the directory in which you put tptp.el>)
+;;   (require 'tptp)
+;;
+;; For slightly better performance of the TPTP emacs lisp package,
+;; byte compile tptp.el.
+;;
+;; HACKING
+;;
+;; You can follow development by going to the source homepage at
+;;
+;;   https://github.com/jessealama/tptp-el
+;;
+;; There you can get the latest bleeding edge development version of
+;; the package, as well as download choice releases.
 ;; 
 ;; Acknowledgments:
 ;;
