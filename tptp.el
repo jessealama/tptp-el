@@ -221,7 +221,7 @@ Here is another example:
   (unless (string= (buffer-name) +proof-buffer-name+)
     (error "Unable to list proof principles outside of a proof buffer."))
   (let ((prover (buffer-local-value 'proof-prover (current-buffer))))
-    (cond ((string= prover "vampire")
+    (cond ((string= prover *vampire-program*)
 	   (view-proof-list-principles-for-vampire))
 	  (t
 	   (message "We don't know how to interpret the proof output of %s; sorry" prover)))))
