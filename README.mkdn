@@ -1,4 +1,4 @@
-tptp-el: Hack TPTP in emacs
+tptp-el: Hack TPTP with emacs and SubEthaEdit
 ==========
 
 Do you work with formal proofs in plain first-order logic?  In
