@@ -388,6 +388,7 @@ If ARG is a negative integer, disable `view-model-mode'; otherwise, enable this 
     (switch-to-buffer prover-buffer)
 
     ;; Kill everything that might already be here
+    (setf buffer-read-only nil)
     (erase-buffer)
     
     ;; Now start inserting content into the buffer
