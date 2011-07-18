@@ -14,22 +14,22 @@
 ;;; Commentary:
 ;;
 ;; Do you work with formal proofs in plain first-order logic?  In
-;; emacs?  If you said "yes" to both questions, this package is for
+;; Emacs?  If you said "yes" to both questions, this package is for
 ;; you.
 ;;
 ;; INSTALLATION
 ;;
-;; Currently, the TPTP emacs lisp package consists of a single emacs
-;; lisp file, namely this one, tptp.el.  Simply put tptp.el in a
+;; Currently, the TPTP Emacs Lisp package consists of a single Emacs
+;; Lisp file, namely this one, tptp.el.  Simply put tptp.el in a
 ;; directory (I recommend "~/share/emacs/site-lisp/tptp", but it
-;; doesn't really matter), and in your emacs initialization file
+;; doesn't really matter), and in your Emacs initialization file
 ;; (generally the file called ".emacs" in your home directory), add
 ;; the form
 ;;
 ;;   (add-to-list 'load-path <path to the directory in which you put tptp.el>)
 ;;   (require 'tptp)
 ;;
-;; For slightly better performance of the TPTP emacs lisp package,
+;; For slightly better performance of the TPTP Emacs Lisp package,
 ;; byte compile tptp.el.
 ;;
 ;; HACKING
@@ -190,8 +190,7 @@ vampire can be found.")
 
 Here is an example:
 
-    43 : neg : ~(![X1]:![X8]:(((object(X1)&object(X8))&?[X3]:(point(X3)&a_equal_at(X1,X8,X3)))=>equal(X1, X8))) : assume_negation(42)
-")
+    43 : neg : ~(![X1]:![X8]:(((object(X1)&object(X8))&?[X3]:(point(X3)&a_equal_at(X1,X8,X3)))=>equal(X1, X8))) : assume_negation(42)")
 
 (defconst +vampire-assumption-marker+
   "[input]"
@@ -207,8 +206,7 @@ Here is an example:
 
 Here is another example:
 
-     42 : conj : ![X1]:![X8]:(((object(X1)&object(X8))&?[X3]:(point(X3)&a_equal_at(X1,X8,X3)))=>equal(X1, X8)) : initial(\"<stdin>\", possibly_a_equal_at_implies_identity)
-")
+     42 : conj : ![X1]:![X8]:(((object(X1)&object(X8))&?[X3]:(point(X3)&a_equal_at(X1,X8,X3)))=>equal(X1, X8)) : initial(\"<stdin>\", possibly_a_equal_at_implies_identity)")
 
 (defun view-proof-list-principles-for-vampire ()
   "List the principles used in a vampire proof."
@@ -223,7 +221,7 @@ Here is another example:
   (interactive)
   ;; sanity check: we are in a proof buffer
   (unless (string= (buffer-name) +proof-buffer-name+)
-    (error "Unable to list proof principles outside of a proof buffer."))
+    (error "Unable to list proof principles outside of a proof buffer"))
   (let ((prover (buffer-local-value 'proof-prover (current-buffer))))
     (cond ((string= prover *vampire-program*)
 	   (view-proof-list-principles-for-vampire))
@@ -233,12 +231,17 @@ Here is another example:
 	   (message "We don't know how to interpret the proof output of %s; sorry" prover)))))
 
 (defun mark-up-proof-for-prover (prover)
+  "Mark up a proof emitted by PROVER."
   (when (string= prover *vampire-program*)
     (mark-up-vampire-proof))
   (when (string= prover *eprover-program*)
     (mark-up-eprover-proof)))
 
 (defun mark-up-vampire-negated-conjecture ()
+  "Mark up the negated conjecture of a vampire proof.
+
+This function currently does not mark up multiple negated
+conjectures."
   (save-excursion
     (goto-char (point-min))
     (search-forward +report-separator+ nil t 2) ;; find two record separators
@@ -252,6 +255,7 @@ Here is another example:
 			     'font-lock-face 'cursor))))))
 
 (defun mark-up-vampire-input-assumptions ()
+  "Mark up assumtions given to Vampire."
   (save-excursion
     (goto-char (point-min))
     (let ((assumption-pos (search-forward +vampire-assumption-marker+ nil t)))
@@ -272,6 +276,9 @@ Here is another example:
   (mark-up-vampire-input-assumptions))
 
 (defun mark-up-eprover-negated-conjecture ()
+  "Mark up the negated conjecture of an E proof.
+
+This function does not mark up multiple negated conjectures."
   (save-excursion
     (goto-char (point-min))
     (search-forward +report-separator+ nil t 2) ;; find two record separators
@@ -285,6 +292,7 @@ Here is another example:
 			     'font-lock-face 'cursor))))))
 
 (defun mark-up-eprover-input-assumptions ()
+  "Mark up assumptions given to E."
   (save-excursion
     (goto-char (point-min))
     (let ((assumption-pos (search-forward +eprover-assumption-marker+ nil t)))
@@ -352,7 +360,7 @@ Help:
 
   ;; sanity checks: we are in the proof buffer
   (unless (string= (buffer-name) +proof-buffer-name+)
-    (error "We are not in the proof buffer; saving deductions doesn't make sense."))
+    (error "We are not in the proof buffer; saving deductions doesn't make sense"))
   (let* ((proof-buffer (current-buffer))
 	 (proof-prover (buffer-local-value 'proof-prover proof-buffer))
 	 (proof-absolute-path (buffer-local-value 'proof-absolute-path proof-buffer))
@@ -363,7 +371,7 @@ Help:
     ;; proof buffer is storing, the text of that file, and the time
     ;; when the deduction was found
     (unless proof-prover
-      (error "The proof buffer somehow does not know the prover whose output it records."))
+      (error "The proof buffer somehow does not know the prover whose output it records"))
     (unless proof-absolute-path
       (error "The proof buffer somehow does not know the absolute path of the file on which %s was invoked" proof-prover))
     (unless proof-time
@@ -396,7 +404,7 @@ Help:
 	(if (file-exists-p deduction-path)
 	    (if (yes-or-no-p (format "There is already at proof saved under '%s'; overwrite it? " deduction-path))
 		(if (file-writable-p deduction-path)
-		    (setf should-we-write? t)       
+		    (setf should-we-write? t)
 		  (error "We cannot write to %s" deduction-path))
 	      (message "OK, refusing to overwrite '%s'" deduction-path))
 	  (setf should-we-write? t))
@@ -439,9 +447,14 @@ If ARG is a negative integer, disable `view-model-mode'; otherwise, enable this 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun tptp-comment-text (text)
+  "Comment out TEXT by prepending percent signs to every line."
   (replace-regexp-in-string "[\n]" "\n% " text))
 
 (defun run-prover (prover additional-arguments &optional file-as-stdin)
+  "Execute PROVER with ADDITIONAL-ARGUMENTS on the file of the
+current buffer.  FILE-AS-STDIN, if not NIL, indicates that PROVER
+should be run with the file of the current buffer as its
+input (as opposed to a separate argument)."
   (interactive (format "sAdditional flags with which %s will be invoked, if any: " prover))
   (save-buffer)
   (let* ((prover-buffer (get-buffer-create +proof-buffer-name+))
