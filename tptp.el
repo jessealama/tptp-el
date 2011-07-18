@@ -177,8 +177,8 @@ If ARG is a negative integer, disable `view-proof-mode'; otherwise, enable this 
   (let* ((tptp-directory (file-name-directory proof-absolute-path))
 	 (tptp-only-filename (file-name-nondirectory proof-absolute-path))
 	 (tptp-basename (file-name-sans-extension tptp-only-filename))
-	 (commented-out-text (format "% %s"
-				     (replace-regexp-in-string "\n"
+	 (commented-out-text (format "%% %s"
+				     (replace-regexp-in-string "[\n]"
 							       "\n% "
 							       proof-text))))
     (destructuring-bind (seconds minutes hour day month year dow dst zone)
@@ -207,8 +207,6 @@ If ARG is a negative integer, disable `view-proof-mode'; otherwise, enable this 
 							   (point-max))))
 	    (switch-to-buffer saved-deduction-buf)
 	    (erase-buffer) ;; there might have been stuff there before
-	    (insert commented-out-text)
-	    (newline)
 	    (insert deduction)
 	    (save-buffer nil))))))))
 
@@ -243,23 +241,28 @@ If ARG is a negative integer, disable `view-model-mode'; otherwise, enable this 
   (save-buffer)
   (let* ((prover-buffer (get-buffer-create +proof-buffer-name+))
 	 (tptp-file-absolute-path (buffer-file-name))
-	 (text (buffer-substring-no-properties (point-min) (point-max))))
+	 (text (buffer-substring-no-properties (point-min) (point-max)))
+	 (commented-out-text (format "%% %s"
+				     (replace-regexp-in-string "[\n]"
+							       "\n%"
+							       text))))
     (switch-to-buffer prover-buffer)
 
     ;; Kill everything that might already be here
     (erase-buffer)
     
     ;; Now start inserting content into the buffer
-    (insert (format "Calling %s like this:" prover))
-    (newline 2)
-    (if (empty-string? additional-arguments)
-	(insert "  " prover " < " tptp-file-absolute-path)
-      (insert "  " prover " " additional-arguments " < " tptp-file-absolute-path))
-    (newline 2)
-    (insert "Results:")
-    (newline)
-    (insert +report-separator+)
-    (newline)
+    (insert (format "%% Invoking %s on" prover)) (newline)
+    (insert "%") (newline)
+    (insert "%") (newline)
+    (insert "%   " tptp-file-absolute-path) (newline)
+    (insert "%") (newline)
+    (insert "%") (newline)
+    (insert "% at " (current-time-string) " with the theory") (newline)
+    (insert "%") (newline)
+    (insert +report-separator+) (newline)
+    (insert commented-out-text) (newline)
+    (insert +report-separator+) (newline)
     (if (empty-string? additional-arguments)
 	(call-process prover tptp-file-absolute-path t t)
       (call-process prover tptp-file-absolute-path t t additional-arguments))
