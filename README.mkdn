@@ -64,4 +64,5 @@ Ed Zalta provided the impetus for launching this package.
 Contact
 ----------
 
-You're welcome to email me at jesse.alama@gmail.com.
+You're welcome to email me at jesse.alama@gmail.com.  Please do let me
+know about bug reports, and feel free to make feature requests.
