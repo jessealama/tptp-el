@@ -441,7 +441,7 @@ If ARG is a negative integer, disable `view-model-mode'; otherwise, enable this 
 (defun tptp-comment-text (text)
   (replace-regexp-in-string "[\n]" "\n% " text))
 
-(defun run-prover (prover additional-arguments)
+(defun run-prover (prover additional-arguments &optional file-as-stdin)
   (interactive (format "sAdditional flags with which %s will be invoked, if any: " prover))
   (save-buffer)
   (let* ((prover-buffer (get-buffer-create +proof-buffer-name+))
@@ -467,8 +467,13 @@ If ARG is a negative integer, disable `view-model-mode'; otherwise, enable this 
     (insert commented-out-text) (newline)
     (insert +report-separator+) (newline)
     (if (empty-string? additional-arguments)
-	(call-process prover tptp-file-absolute-path t t)
-      (call-process prover tptp-file-absolute-path t t additional-arguments))
+	(if file-as-stdin
+	    (call-process prover tptp-file-absolute-path t t)
+	  (call-process prover nil t t tptp-file-absolute-path))
+      (if file-as-stdin
+	  (call-process prover tptp-file-absolute-path t t additional-arguments)
+
+	(call-process prover nil t t tptp-file-absolute-path additional-arguments)))
     (view-proof-mode prover)
     (setf buffer-read-only t)
 
@@ -496,7 +501,7 @@ ADDITIONAL-VAMPIRE-ARGUMENTS, a string, will be the other
 arguments given to Vampire.  The filename argument comes last,
 after ADDITIONAL-VAMPIRE-ARGUMENTS."
   (interactive "sAdditional flags with which vampire will be invoked, if any: ")
-  (run-prover *vampire-program* additional-vampire-arguments))
+  (run-prover *vampire-program* additional-vampire-arguments t))
 
 (defun eprove-current-buffer (additional-e-arguments)
   "Invoke the E prover on the current buffer.  The filename of
