@@ -16,6 +16,13 @@ on seescriptsettings()
 	
 end seescriptsettings
 
+-- sanity check: the run-vampire.sh script exists and is executable
+tell application "Finder"
+	if not (exists POSIX file "~/bin/run-vampire.sh") then
+		error "The run-vampire.sh script does not exist in the expect location (~/bin/run-vampire.sh)"
+	end if
+end tell
+
 
 -- the actual script
 
