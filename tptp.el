@@ -499,9 +499,9 @@ input (as opposed to a separate argument)."
     (insert "%") (newline)
     (insert "% at " (current-time-string) " with the theory") (newline)
     (insert "%") (newline)
-    (insert +report-separator+) (newline)
+    (insert (tptp-comment-text +report-separator+)) (newline)
     (insert commented-out-text) (newline)
-    (insert +report-separator+) (newline)
+    (insert (tptp-comment-text +report-separator+)) (newline)
     (if (empty-string? additional-arguments)
 	(if file-as-stdin
 	    (call-process prover tptp-file-absolute-path t t)
