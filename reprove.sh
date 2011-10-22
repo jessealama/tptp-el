@@ -70,7 +70,7 @@ function ensure_sensible_tptp_theory() {
 ######################################################################
 
 # The timeout used to stop a prover.
-prover_timeout="30s";
+prover_timeout="30"; # seconds
 
 function ensure_file_exists_and_is_readable() {
 
@@ -112,7 +112,7 @@ function run_prover_with_timeout() {
     local theory=$2;
     local proof=$3;
 
-    timeout $prover_timeout $prover_script $theory > $proof;
+    $prover_script $theory $prover_timeout > $proof;
 
     # Mac OS X timeout is weird
     if [ $? -eq "124" ]; then
