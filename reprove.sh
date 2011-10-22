@@ -303,7 +303,7 @@ work_directory=$2;
 ensure_file_exists_and_is_readable $theory;
 ensure_sensible_tptp_theory $theory;
 
-if [ -e $work_directory ]; then
+if [ -f $work_directory ]; then
     echo "Error: We would have placed our results into the directory";
     echo
     echo "  $work_directory"
