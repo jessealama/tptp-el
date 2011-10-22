@@ -21,7 +21,7 @@ for program in $needed_programs; do
     fi
 done
 
-script_home=`pwd`; # blah
+script_home=`dirname $0`; # blah
 
 run_eprover_script="$script_home/run-eprover.sh";
 eprover_used_principles_script="$script_home/eprover-used-principles.sh";
