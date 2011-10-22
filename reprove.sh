@@ -308,8 +308,8 @@ if [ -f $work_directory ]; then
     echo
     echo "  $work_directory"
     echo
-    echo "but there is already a file in the current working directory by that name."
-    echo "Please move the file out of the way.";
+    echo "but there is already a file in the current working directory"
+    echo "by that name. Please move the file out of the way.";
     exit 1;
 fi
 
@@ -318,8 +318,8 @@ if [ -d $work_directory ]; then
     echo
     echo "  $work_directory"
     echo
-    echo "but there is already a directory in the current working directory by that name."
-    echo "Please move the directory out of the way.";
+    echo "but there is already a directory in the current working directory"
+    echo "by that name.  Please move the directory out of the way.";
     exit 1;
 fi
 
