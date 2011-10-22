@@ -220,7 +220,7 @@ function keep_proving() {
 
     done
 
-    echo "We needed $proof_attempt iteration(s) before finding the $prover-minimal set of principles";
+    echo "We needed $proof_attempt iteration(s) before finding the $prover_name-minimal set of principles";
 
     return;
 }
