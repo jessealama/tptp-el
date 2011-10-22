@@ -1,5 +1,10 @@
 #!/bin/bash -
 
+theory=$1;
+timeout=$2;
+
+ulimit -t $2;
+
 # Rewrite TPTP theorem, definition, assumption, and plain formulas into axioms
 function massage_for_vampire() {
 
