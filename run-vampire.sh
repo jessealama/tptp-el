@@ -1,26 +1,32 @@
 #!/bin/bash -
 
 theory=$1;
-timeout=$2;
+timeout=${2-"30"};
 
-ulimit -t $2;
+if [ -z $1 ]; then
+    echo "Usage: `basename $0` TPTP-THEORY [TIMEOUT]";
+    exit 1;
+fi
 
-# Rewrite TPTP theorem, definition, assumption, and plain formulas into axioms
+if [ ! -r $theory ]; then
+    echo "Error: the supplied TPTP theory '$theory' is not readable";
+    exit 1;
+fi
+
+ulimit -t $timeout \
+    || (echo "Error: '$timeout' is not an acceptable argument to ulimit -t." && exit 1);
+
+# Rewrite TPTP theorem, definition, assumption, and plain formulas
+# into axioms.  Vampire complains if multiply-defined formulas occur
+# in its input theory, so we uniq'ify them.
 function massage_for_vampire() {
-
-    if [ -z $1 ]; then
-	echo "Error: a TPTP theory should be supplied";
-	exit 1;
-    fi
-
-    tptp_theory=$1;
-
-    tptp4X -umachine $tptp_theory \
+    tptp4X -N -umachine $1 \
 	| sed -e 's/,definition,/,axiom,/' \
 	      -e 's/,theorem,/,axiom,/' \
 	      -e 's/,plain,/,axiom,/' \
 	      -e 's/,assumption,/,axiom,/' \
-	| tptp4X -umachine --;
+	| sort -u \
+        | uniq -u;
 }
 
 massage_for_vampire $1 | vampire -output_axiom_names on
