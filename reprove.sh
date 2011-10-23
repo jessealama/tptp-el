@@ -169,7 +169,8 @@ function keep_proving() {
     local theory=$theory;
 
     # Let's go!
-    echo "================================================================================";
+    echo "--------------------------------------------------------------------------------";
+
     local prover_name_length=${#prover_name};
     local offset=`expr 80 - $prover_name_length`;
     local indent=`expr $offset / 2`;
@@ -178,7 +179,7 @@ function keep_proving() {
 	echo -n " ";
     done
     echo -e "${CYAN}$prover_name${NC}";
-    echo "================================================================================";
+    echo "--------------------------------------------------------------------------------";
 
     # echo -n "* Trying to find a/an $prover_name-proof for $theory_basename...";
 
@@ -218,7 +219,7 @@ function keep_proving() {
 
 	echo -e "${GREEN}proof found${NC} [${BLUE}$num_used_principles${NC}/${GRAY}$num_unused_principles${NC} principles ${BLUE}used${NC}/${GRAY}unused${NC}]";
 
-	echo $conjecture_formula > $trimmed_theory;
+	echo "$conjecture_formula" > $trimmed_theory;
 	for principle in `cat $used_principles`; do
 	    tptp4X -umachine -c -x $theory | grep "fof($principle," >> $trimmed_theory;
 	done
@@ -276,8 +277,25 @@ if [ -d $work_directory ]; then
     exit 1;
 fi
 
+theory_basename=`basename $theory`;
+
 mkdir -p $work_directory;
 cp $theory $work_directory;
+
+echo "================================================================================";
+theory_name_length=${#theory_basename};
+offset=`expr 80 - $theory_name_length`;
+indent=`expr $offset / 2`;
+# um
+for ((i=1; i <= $indent; i++)); do
+    echo -n " ";
+done
+echo -e "${CYAN}$theory_basename${NC}";
+echo "================================================================================";
+
+tptp4X -uhuman -c -x $theory
+
+echo "================================================================================";
 
 keep_proving $run_eprover_script $eprover_used_principles_script $eprover_unused_principles_script "eprover";
 keep_proving $run_vampire_script $vampire_used_principles_script $vampire_unused_principles_script "vampire";
@@ -287,5 +305,5 @@ keep_proving $run_vampire_script $vampire_used_principles_script $vampire_unused
 
 #keep_proving $run_prover9_script $prover9_used_principles_script $prover9_unused_principles_script "prover9";
 
-echo "--------------------------------------------------------------------------------";
+echo "================================================================================";
 echo "Done.  Our work has been saved in the directory $work_directory.";
