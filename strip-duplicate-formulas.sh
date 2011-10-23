@@ -3,7 +3,17 @@
 # TPTP theories that have multiple formulas with identical names are
 # invalid, even if the contents of the two formulas are identical.
 # This script removes such duplicate formulas from an input TPTP
-# theory.
+# theory.  The output of this script is not guaranteed to be a TPTP
+# theory with non-duplicate names.  One case where this can occur is
+# when distinct formulas are assigned the same name, e.g.,
+#
+# fof(my_formula,axiom,$true).
+# fof(my_formula,axiom,$false).
+#
+# or when a single formula is assigned distinct statuses, e.g.,
+#
+# fof(my_formula,axiom,$true).
+# fof(my_formula,theorem,$false).
 
 theory=$1;
 
