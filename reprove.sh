@@ -290,7 +290,7 @@ indent=`expr $offset / 2`;
 for ((i=1; i <= $indent; i++)); do
     echo -n " ";
 done
-echo -e "${CYAN}$theory_basename${NC}";
+echo "$theory_basename";
 echo "================================================================================";
 
 tptp4X -uhuman -c -x $theory
