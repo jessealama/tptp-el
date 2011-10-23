@@ -1,5 +1,18 @@
 #!/bin/bash -
 
+prover9_proof=$1;
+theory=$2
+
+if [ -z $prover9_proof ]; then
+    echo "Usage: `basename $0` PROVER9-PROOF-OBJECT TPTP-BACKGROUND-THEORY";
+    exit 1;
+fi
+
+if [ -z $theory ]; then
+    echo "Usage: `basename $0` PROVER9-PROOF-OBJECT TPTP-BACKGROUND-THEORY";
+    exit 1;
+fi
+
 # Working with a prover9 output line such as
 #
 # 10 (all A all B (r1_xboole_0(A,B) <-> k3_xboole_0(A,B) = k1_xboole_0)) # label(d7_xboole_0) # label(definition) # label(non_clause).  [assumption].
