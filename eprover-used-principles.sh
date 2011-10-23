@@ -42,6 +42,6 @@ function used() {
 }
 
 for formula in `used`; do
-    grep --silent "fof($formula,conjecture," $background_theory > /dev/null 2>&1;
+    tptp4X -c -x -umachine $background_theory | grep --silent "fof($formula,conjecture," > /dev/null 2>&1;
     if [ $? -ne "0" ]; then echo $formula; fi
 done
