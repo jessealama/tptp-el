@@ -1,8 +1,12 @@
 #!/bin/bash -
 
 theory=$1;
-timeout=$2;
+timeout=${2:"30"};
 
-ulimit -t $2;
+if [ -z $theory ]; then
+    echo "Usage: `basename $0` THEORY [TIMEOUT]";
+fi
 
-eprove $1 | epclextract;
+ulimit -t $timeout;
+
+eprove $theory | epclextract;
