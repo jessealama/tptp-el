@@ -41,13 +41,12 @@ function prover9_labels_and_answers() {
 	| sed -e 's/label(\(.*\))/\1/' \
 	      -e 's/answer(\(.*\))/\1/' \
 	      -e 's/^ *//' -e 's/ *$//' \
-	| sort -u;
+	| sort -u \
+	| uniq;
 }
 
-prover9_proof=$1;
-theory=$2
 for principle in `prover9_labels_and_answers $prover9_proof`; do
-    grep --silent "^fof($principle," $theory > /dev/null 2>&1;
+    grep --silent "fof($principle," $theory > /dev/null 2>&1;
     if [ $? -eq "0" ]; then
 	# Don't say that the conjecture was used.  Of course, it will
 	# in general be on the formulas employed in the course of the
