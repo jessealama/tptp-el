@@ -13,6 +13,7 @@ if [ ! -r $theory ]; then
     exit 1;
 fi
 
-ulimit -t $timeout;
+ulimit -t $timeout \
+    || (echo "Error: '$timeout' is not an acceptable argument to ulimit -t." && exit 1);
 
 eproof --tptp3-in $theory;
