@@ -15,4 +15,4 @@ fi
 
 ulimit -t $timeout;
 
-eprove $theory | epclextract;
+eproof --tptp3-in $theory;
