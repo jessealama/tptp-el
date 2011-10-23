@@ -1,4 +1,31 @@
-#!/bin/bash -
+#!/sw/bin/bash
+
+######################################################################
+## Fancy output
+######################################################################
+
+# adapted from http://tldp.org/LDP/abs/html/colorizing.html#AEN20111
+# and http://tldp.org/LDP/abs/html/sample-bashrc.html
+
+GRAY='\033[1;30m';
+black='\033[30;47m'
+red='\033[31;47m'
+RED='\033[1;31m'
+green='\033[32;47m'
+GREEN='\033[1;32m';
+yellow='\033[33;47m'
+blue='\033[34;47m'
+BLUE='\033[1;34m'
+magenta='\033[35;47m'
+cyan='\033[36;47m'
+CYAN='\033[1;36m'
+white='\033[37;47m'
+NC='\033[0m'
+
+function error() {
+    local message=$1;
+    echo -e "${RED}Error${NC}: $message";
+}
 
 ######################################################################
 ## Sanity checking
@@ -16,7 +43,7 @@ needed_programs="$vampire_programs $eprover_programs $prover9_programs $tptp_pro
 for program in $needed_programs; do
     which $program > /dev/null;
     if [ $? -ne "0" ]; then
-	echo "Error: the required program '$program' could not be found in your path.";
+	error "The required program '$program' could not be found in your path.";
 	exit 1;
     fi
 done
@@ -44,15 +71,15 @@ scripts="$eprover_scripts $vampire_scripts $prover9_scripts $tptp_scripts";
 
 for script in $scripts; do
     if [ ! -e $script ]; then
-	echo "Error: the required script '$script' is missing";
+	error "The required script '$script' is missing";
 	exit 1;
     fi
     if [ ! -r $script ]; then
-	echo "Error: the required script '$script' is not readable";
+	error "The required script '$script' is not readable";
 	exit 1;
     fi
     if [ ! -x $script ]; then
-	echo "Error: the required script '$script' is not executable";
+	error "The required script '$script' is not executable";
 	exit 1;
     fi
 done
@@ -60,7 +87,7 @@ done
 function ensure_sensible_tptp_theory() {
     tptp4X $1 > /dev/null 2>&1;
     if [ $? -ne "0" ]; then
-	echo "The TPTP theory at '$1' fails to be a valid TPTP file.";
+	error "The TPTP theory at '$1' fails to be a valid TPTP file.";
 	exit 1;
     fi
 }
@@ -75,17 +102,17 @@ prover_timeout="30"; # seconds
 function ensure_file_exists_and_is_readable() {
 
     if [ -z $1 ]; then
-	echo "Error: we need an argument to determine whether a file exists and is readable";
+	error "We need an argument to determine whether a file exists and is readable.";
 	exit 1;
     fi
 
     if [ ! -e $1 ]; then
-	echo "Error: the supplied theory '$1' doesn't exist";
+	error "The supplied theory '$1' doesn't exist.";
 	exit 1;
     fi
 
     if [ ! -r $1 ]; then
-	echo "Error: the supplied theory '$1' is not readable";
+	error "The supplied theory '$1' is not readable.";
 	exit 1;
     fi
 
@@ -94,17 +121,17 @@ function ensure_file_exists_and_is_readable() {
 function run_prover_with_timeout() {
 
     if [ -z $1 ]; then
-	echo "Error: a proof script is needed, but none was supplied";
+	error "A proof script is needed, but none was supplied.";
 	return 1;
     fi
 
     if [ -z $2 ]; then
-	echo "Error: a theory file is needed, but none was supplied";
+	error "A theory file is needed, but none was supplied.";
 	return 1;
     fi
 
     if [ -z $3 ]; then
-	echo "Error: a target proof file must be supplied";
+	error "A target proof file must be supplied.";
 	return 1;
     fi
 
@@ -114,13 +141,7 @@ function run_prover_with_timeout() {
 
     $prover_script $theory $prover_timeout > $proof;
 
-    # Mac OS X timeout is weird
-    if [ $? -eq "124" ]; then
-	echo; # because the previous call to echo used -n
-	echo "Unable to find an initial proof in less than $prover_timeout; unable to proceed.";
-	exit 1;
-    fi
-    return;
+    return $?;
 }
 
 # $1: the script to be executed (under a timeout)
@@ -143,142 +164,77 @@ function keep_proving() {
     local prover_directory=$work_directory/$prover_name;
     mkdir -p $prover_directory;
 
+    local conjecture_formula=`tptp4X -umachine -c $theory | grep ',conjecture,'`;
     local theory_basename=`basename $theory`;
     local theory=$theory;
 
+    # Let's go!
+    echo "================================================================================";
+    local prover_name_length=${#prover_name};
+    local offset=`expr 80 - $prover_name_length`;
+    local indent=`expr $offset / 2`;
+    # um
+    for ((i=1; i <= $indent; i++)); do
+	echo -n " ";
+    done
+    echo -e "${CYAN}$prover_name${NC}";
+    echo "================================================================================";
+
+    # echo -n "* Trying to find a/an $prover_name-proof for $theory_basename...";
+
     local proof_attempt=1;
 
-    local proof="$prover_directory/$theory_basename.1.proof";
-    local used_principles="$prover_directory/$theory_basename.1.proof.used-principles";
-    local unused_principles="$prover_directory/$theory_basename.1.proof.unused-principles";
-    local trimmed_theory="$prover_directory/$theory_basename.1.trimmed";
+    local proof;
+    local used_principles;
+    local unused_principles;
+    local trimmed_theory;
+    local num_used_principles;
+    local num_unused_principles;
 
-    # do the initial proof
-    run_prover_with_timeout $prover_script $theory $proof;
+    unused_principles="$prover_directory/$theory_basename.$proof_attempt.proof.unused-principles";
 
-    # if this didn't work, then don't go any further
-    if [ $? -ne "0" ]; then
-	echo "Error: the initial run of the proof script";
-	echo;
-	echo "  $prover_script";
-	echo;
-	echo "did not exit cleanly when applied to";
-	echo;
-	echo "  $theory";
-	echo;
-	echo "so we cannot continue.";
-	return 1;
-    fi
+    while [ $proof_attempt = "1" -o -s $unused_principles ]; do
 
-    # compute used and unused principles, and trim the theory
-    $used_principles_script $proof $theory > $used_principles;
-    $unused_principles_script $proof $theory > $unused_principles;
+	echo -n "* Proof attempt $proof_attempt..."
 
-    for principle in `cat $used_principles`; do
-	tptp4X -umachine $theory | grep "fof($principle," >> $trimmed_theory;
-    done
-
-    ## Sanity check: the theory that we just emitted is a sensible TPTP theory
-    ensure_sensible_tptp_theory $trimmed_theory;
-
-    while [ -s $unused_principles -a $proof_attempt -lt "5" ]; do
-
-	theory=$trimmed_theory;
-	proof_attempt=`expr $proof_attempt + 1`;
 	proof="$prover_directory/$theory_basename.$proof_attempt.proof";
+	used_principles="$prover_directory/$theory_basename.$proof_attempt.proof.used-principles";
+	unused_principles="$prover_directory/$theory_basename.$proof_attempt.proof.unused-principles";
+	trimmed_theory="$prover_directory/$theory_basename.$proof_attempt.trimmed";
 
 	run_prover_with_timeout $prover_script $theory $proof;
 
         # if this didn't work, then don't go any further
 	if [ $? -ne "0" ]; then
-	    echo "Error: run number $proof_attempt of the proof script";
-	    echo;
-	    echo "  $prover_script";
-	    echo;
-	    echo "did not exit cleanly when applied to";
-	    echo;
-	    echo "  $theory";
-	    echo;
-	    echo "so we cannot continue.";
+	    echo -e "${RED}fail${NC}";
 	    return 1;
 	fi
 
-	used_principles="$prover_directory/$theory_basename.$proof_attempt.proof.used-principles";
-	unused_principles="$prover_directory/$theory_basename.$proof_attempt.proof.unused-principles";
+	$used_principles_script $proof $theory > $used_principles;
+	$unused_principles_script $proof $theory > $unused_principles;
 
-	$used_principles_script $proof $trimmed_theory > $used_principles;
-	$unused_principles_script $proof $trimmed_theory > $unused_principles;
+	num_used_principles=`cat $used_principles | wc -l | sed -e 's/^ *//'`;
+	num_unused_principles=`cat $unused_principles | wc -l | sed -e 's/^ *//'`;
 
-	trimmed_theory="$prover_directory/$theory_basename.$proof_attempt.trimmed";
+	echo -e "${GREEN}proof found${NC} [${BLUE}$num_used_principles${NC}/${GRAY}$num_unused_principles${NC} principles ${BLUE}used${NC}/${GRAY}unused${NC}]";
 
+	echo $conjecture_formula > $trimmed_theory;
 	for principle in `cat $used_principles`; do
-	    tptp4X -umachine $theory | grep "fof($principle," >> $trimmed_theory;
+	    tptp4X -umachine -c -x $theory | grep "fof($principle," >> $trimmed_theory;
 	done
 
         ## Sanity check: the theory that we just emitted is a sensible TPTP theory
 	ensure_sensible_tptp_theory $trimmed_theory;
 
+	theory=$trimmed_theory;
+	proof_attempt=`expr $proof_attempt + 1`;
+
     done
 
-    echo "We needed $proof_attempt iteration(s) before finding the $prover_name-minimal set of principles";
+    echo;
+    echo "Done.  $prover_name has found a set of sufficient premises of size $num_used_principles.";
 
     return;
-}
-
-# $1: the script to be executed (under a timeout)
-#
-# $2: the script that will tell us what principles were used in the
-#     proof
-#
-# $3: the script that will tell us what principles were *not* used in
-# the proof
-#
-# $4: the name of the subdirectory of $work_directory where we will
-#     save our output
-function reprove() {
-
-    local prover_script=$1;
-    local used_principles_script=$2;
-    local unused_principles_script=$3;
-    local prover_name=$4;
-
-    local prover_directory=$work_directory/$prover_name;
-
-    mkdir -p $prover_directory;
-
-    local theory=`basename $theory`;
-
-    local first_proof=$prover_directory/$theory.original;
-    local first_proof_principles=$first_proof.used-principles;
-    local first_proof_unused_principles=$first_proof.unused-principles
-    local trimmed_theory=$prover_directory/$theory.trimmed.tptp;
-    local second_proof=$prover_directory/$theory.trimmed;
-    local second_proof_principles=$second_proof.used-principles;
-    local second_proof_unused_principles=$second_proof.unused-principles;
-
-    echo -n "Trying to find first proof for '$theory' using $prover_name...";
-    run_prover_with_timeout $prover_script $theory $first_proof;
-
-    $used_principles_script $first_proof $theory > $first_proof_principles;
-    $unused_principles_script $first_proof $theory > $first_proof_unused_principles;
-
-    echo "done."
-
-    for principle in `cat $first_proof_principles`; do
-	tptp4X -umachine $theory | grep "fof($principle," >> $trimmed_theory;
-    done
-
-    ## Sanity check: the theory that we just emitted is a sensible TPTP theory
-    ensure_sensible_tptp_theory $trimmed_theory;
-
-    echo -n "Trying to find a second proof from the trimmed theory...";
-
-    run_prover_with_timeout $prover_script $trimmed_theory $second_proof;
-
-    $used_principles_script $second_proof $theory > $second_proof_principles;
-    $unused_principles_script $second_proof $trimmed_theory > $second_proof_unused_principles;
-
-    echo "done."
 }
 
 ######################################################################
@@ -304,7 +260,7 @@ ensure_file_exists_and_is_readable $theory;
 ensure_sensible_tptp_theory $theory;
 
 if [ -f $work_directory ]; then
-    echo "Error: We would have placed our results into the directory";
+    error "We would have placed our results into the directory";
     echo
     echo "  $work_directory"
     echo
@@ -314,7 +270,7 @@ if [ -f $work_directory ]; then
 fi
 
 if [ -d $work_directory ]; then
-    echo "Error: We would have placed our results into the directory"
+    error "We would have placed our results into the directory"
     echo
     echo "  $work_directory"
     echo
@@ -330,4 +286,5 @@ keep_proving $run_eprover_script $eprover_used_principles_script $eprover_unused
 keep_proving $run_vampire_script $vampire_used_principles_script $vampire_unused_principles_script "vampire";
 keep_proving $run_prover9_script $prover9_used_principles_script $prover9_unused_principles_script "prover9";
 
-exit 0;
+echo "--------------------------------------------------------------------------------";
+echo "Done.  Our work has been saved in the directory $work_directory.";
