@@ -85,7 +85,7 @@ for script in $scripts; do
 done
 
 function ensure_sensible_tptp_theory() {
-    tptp4X $1 > /dev/null 2>&1;
+    tptp4X -x -N $1 > /dev/null 2>&1;
     if [ $? -ne "0" ]; then
 	error "The TPTP theory at '$1' fails to be a valid TPTP file.";
 	exit 1;
@@ -164,7 +164,7 @@ function keep_proving() {
     local prover_directory=$work_directory/$prover_name;
     mkdir -p $prover_directory;
 
-    local conjecture_formula=`tptp4X -umachine -c $theory | grep ',conjecture,'`;
+    local conjecture_formula=`tptp4X -N -umachine -c $theory | grep ',conjecture,'`;
     local theory_basename=`basename $theory`;
     local theory=$theory;
 
@@ -221,7 +221,7 @@ function keep_proving() {
 
 	echo "$conjecture_formula" > $trimmed_theory;
 	for principle in `cat $used_principles`; do
-	    tptp4X -umachine -c -x $theory | grep "fof($principle," >> $trimmed_theory;
+	    tptp4X -N -umachine -c -x $theory | grep "fof($principle," >> $trimmed_theory;
 	done
 
         ## Sanity check: the theory that we just emitted is a sensible TPTP theory
@@ -293,7 +293,7 @@ done
 echo "$theory_basename";
 echo "================================================================================";
 
-tptp4X -uhuman -c -x $theory
+tptp4X -N -uhuman -c -x $theory
 
 echo "================================================================================";
 
