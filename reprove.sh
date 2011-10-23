@@ -231,9 +231,6 @@ function keep_proving() {
 
     done
 
-    echo;
-    echo "Done.  $prover_name has found a set of sufficient premises of size $num_used_principles.";
-
     return;
 }
 
