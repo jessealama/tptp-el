@@ -1,7 +1,7 @@
 #!/bin/bash -
 
 theory=$1;
-timeout=${2:"30"};
+timeout=${2-"30"};
 
 if [ -z $theory ]; then
     echo "Usage: `basename $0` THEORY [TIMEOUT]";
