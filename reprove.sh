@@ -139,7 +139,7 @@ function run_prover_with_timeout() {
     local theory=$2;
     local proof=$3;
 
-    $prover_script $theory $prover_timeout > $proof;
+    $prover_script $theory $prover_timeout > $proof 2> /dev/null;
 
     return $?;
 }
