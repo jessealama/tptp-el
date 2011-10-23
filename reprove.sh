@@ -284,7 +284,11 @@ cp $theory $work_directory;
 
 keep_proving $run_eprover_script $eprover_used_principles_script $eprover_unused_principles_script "eprover";
 keep_proving $run_vampire_script $vampire_used_principles_script $vampire_unused_principles_script "vampire";
-keep_proving $run_prover9_script $prover9_used_principles_script $prover9_unused_principles_script "prover9";
+
+# Disable prover9.  The construction of prover9 problems is not
+# correct.
+
+#keep_proving $run_prover9_script $prover9_used_principles_script $prover9_unused_principles_script "prover9";
 
 echo "--------------------------------------------------------------------------------";
 echo "Done.  Our work has been saved in the directory $work_directory.";
