@@ -29,4 +29,4 @@ function massage_for_vampire() {
         | uniq -u;
 }
 
-massage_for_vampire $1 | vampire -output_axiom_names on
+massage_for_vampire $1 | vampire -output_axiom_names on | grep '^[1-9][0-9]*\.'
