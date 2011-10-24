@@ -24,6 +24,7 @@ function massage_for_vampire() {
 	| sed -e 's/,definition,/,axiom,/' \
 	      -e 's/,theorem,/,axiom,/' \
 	      -e 's/,plain,/,axiom,/' \
+	      -e 's/,lemma,/,axiom,/' \
 	      -e 's/,assumption,/,axiom,/' \
 	| sort -u \
         | uniq -u;
