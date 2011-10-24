@@ -23,7 +23,7 @@ if [ ! -r $theory ]; then
     exit 1;
 fi
 
-for formula in `tptp4X -c -x -umachine $theory | grep --invert-match ',conjecture,' | cut -f 1 -d ',' | sed -e 's/fof(//'`; do
+for formula in `tptp4X -N -c -x -umachine $theory | grep --invert-match ',conjecture,' | cut -f 1 -d ',' | sed -e 's/fof(//'`; do
     grep --silent "\[input $formula\]" $vampire_proof;
     if [ $? -ne "0" ]; then echo $formula; fi
 done
