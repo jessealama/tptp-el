@@ -36,7 +36,7 @@ function error() {
 vampire_programs="vampire";
 eprover_programs="eprove epclextract";
 prover9_programs="tptp_to_ladr prover9 prooftrans"
-tptp_programs="tptp4X";
+tptp_programs="tptp4X tptp2X";
 
 needed_programs="$vampire_programs $eprover_programs $prover9_programs $tptp_programs";
 
@@ -299,11 +299,7 @@ echo "==========================================================================
 
 keep_proving $run_eprover_script $eprover_used_principles_script $eprover_unused_principles_script "eprover";
 keep_proving $run_vampire_script $vampire_used_principles_script $vampire_unused_principles_script "vampire";
-
-# Disable prover9.  The construction of prover9 problems is not
-# correct.
-
-#keep_proving $run_prover9_script $prover9_used_principles_script $prover9_unused_principles_script "prover9";
+keep_proving $run_prover9_script $prover9_used_principles_script $prover9_unused_principles_script "prover9";
 
 echo "================================================================================";
 echo "Done.  Our work has been saved in the directory $work_directory.";
