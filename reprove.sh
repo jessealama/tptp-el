@@ -34,7 +34,7 @@ function error() {
 # Check that all the programs that we use here exist and are executable
 
 vampire_programs="vampire";
-eprover_programs="eprove epclextract";
+eprover_programs="eprover epclextract";
 prover9_programs="tptp_to_ladr prover9 prooftrans"
 tptp_programs="tptp4X tptp2X";
 
