@@ -34,7 +34,7 @@ if [ ! -r $background_theory ]; then
 fi
 
 function used() {
-    grep --only-matching '\[input [^[]*\]' $1 \
+    grep --only-matching '\[input [^[]*\]' $proof \
 	| sed -e 's/\[input \(.*\)\]/\1/' \
 	| sort -u;
 }
