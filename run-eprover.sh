@@ -16,5 +16,5 @@ fi
 ulimit -t $timeout \
     || (echo "Error: '$timeout' is not an acceptable argument to ulimit -t." && exit 1);
 
-eprover -l4 -xAuto -tAuto -R --memory-limit=1000 --tptp3-in $theory \
+eprover -l4 -xAuto -tAuto -R --tptp3-in $theory \
     | epclextract
