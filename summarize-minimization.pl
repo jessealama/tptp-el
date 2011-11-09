@@ -14,23 +14,28 @@ sub copy_string {
 
 sub last_successful_proof_in_dir {
   my $dir = shift;
-  my @candidates = `find "$dir" -type f -name "*.used-principles" | xargs ls -t`;
-  chomp @candidates;
-  my $num_candidates = scalar @candidates;
-  my $i = 0;
-  my $last_one = undef;
-  while (not (defined $last_one) && $i < $num_candidates) {
-    my $candidate = $candidates[$i];
-    if (-z $candidate) {
-      $i++;
-    } else {
-      $last_one = $candidate;
+  my @used_principles_files = `find "$dir" -type f -name "*.used-principles"`;
+  if (scalar @used_principles_files == 0) {
+    return undef;
+  } else {
+    my @candidates = `find "$dir" -type f -name "*.used-principles" | xargs ls -t`;
+    chomp @candidates;
+    my $num_candidates = scalar @candidates;
+    my $i = 0;
+    my $last_one = undef;
+    while (not (defined $last_one) && $i < $num_candidates) {
+      my $candidate = $candidates[$i];
+      if (-z $candidate) {
+	$i++;
+      } else {
+	$last_one = $candidate;
+      }
     }
+    if ($i != 0 and defined $last_one) {
+      print STDERR ("Warning: the most recent proof file in $dir is empty, and hence unusual;\nWe will cull premises from $last_one as the final successful minimization.\n")
+    }
+    return $last_one;
   }
-  if ($i != 0 and defined $last_one) {
-    print STDERR ("Warning: the most recent proof file in $dir is empty, and hence unusual;\nWe will cull premises from $last_one as the final successful minimization.\n")
-  }
-  return $last_one;
 }
 
 sub principles_of_proof {
