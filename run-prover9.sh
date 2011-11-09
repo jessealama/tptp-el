@@ -12,4 +12,4 @@ ulimit -t $timeout \
 
 tptp2X -tstdfof -fprover9 -d- -q2 $theory \
     | prover9 -x 2>&1 \
-    | prooftrans renumber
+    | prover9-sentry.pl;
