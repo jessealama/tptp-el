@@ -53,17 +53,20 @@ script_home=`dirname $0`; # blah
 run_eprover_script="$script_home/run-eprover.sh";
 eprover_used_principles_script="$script_home/eprover-used-principles.sh";
 eprover_unused_principles_script="$script_home/eprover-unused-principles.sh";
-eprover_scripts="$run_eprover_script $eprover_used_principles_script $eprover_unused_principles_script"
+eprover_sentry_script="$script_home/eprover-sentry.pl";
+eprover_scripts="$run_eprover_script $eprover_used_principles_script $eprover_unused_principles_script $eprover_sentry_script"
 
 run_vampire_script="$script_home/run-vampire.sh";
 vampire_used_principles_script="$script_home/vampire-used-principles.sh";
 vampire_unused_principles_script="$script_home/vampire-unused-principles.sh";
-vampire_scripts="$run_vampire_script $vampire_used_principles_script $vampire_unused_principles_script"
+vampire_sentry_script="$script_home/vampire-sentry.pl";
+vampire_scripts="$run_vampire_script $vampire_used_principles_script $vampire_unused_principles_script $vampire_sentry_script"
 
 run_prover9_script="$script_home/run-prover9.sh";
 prover9_used_principles_script="$script_home/prover9-used-principles.sh";
 prover9_unused_principles_script="$script_home/prover9-unused-principles.sh";
-prover9_scripts="$run_prover9_script $prover9_used_principles_script $prover9_unused_principles_script"
+prover9_sentry_script="$script_home/prover9-sentry.pl";
+prover9_scripts="$run_prover9_script $prover9_used_principles_script $prover9_unused_principles_script $prover9_sentry_script"
 
 tptp_scripts="$script_home/tptp-labels.sh";
 
@@ -205,10 +208,18 @@ function keep_proving() {
 
 	run_prover_with_timeout $prover_script $theory $proof;
 
+	prover_exit_code="$?";
+
         # if this didn't work, then don't go any further
-	if [ $? -ne "0" ]; then
-	    echo -e "${RED}fail${NC}";
-	    return 1;
+	if [ $prover_exit_code -ne "0" ]; then
+
+	    if [ $prover_exit_code -eq "2" ]; then
+		echo -e "${RED}countersatisfiable!${NC}";
+		return 1;
+	    else
+		echo -e "${RED}fail${NC}";
+		return 1;
+	    fi
 	fi
 
 	$used_principles_script $proof $theory > $used_principles;
