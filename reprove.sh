@@ -93,6 +93,19 @@ function ensure_sensible_tptp_theory() {
 	error "The TPTP theory at '$1' fails to be a valid TPTP file.";
 	exit 1;
     fi
+
+    # tptp4x, when called with -x, will print "ERROR: cannot open ..."
+    # when it can't open the includes.  But then it exits cleanly!
+
+    local unable_to_open=`tptp4X -x -N -V $1 | grep 'ERROR: Cannot open'`;
+
+    if [ ! -z "$unable_to_open" ]; then
+	error "The TPTP theory at '$1' has include directives that cannot be processed";
+	echo "Here is the error message:";
+	echo "$unable_to_open";
+	exit 1;
+    fi
+
     local conjecture=`tptp4X -x -N -V -umachine $1 | grep --count ',conjecture,'`;
     if [ "$conjecture" -eq "0" ]; then
 	error "The TPTP theory at '$1' contains no conjecture formula.";
