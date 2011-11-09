@@ -224,6 +224,7 @@ function keep_proving() {
 	    # was any proof emitted?
 	    if [ ! -s $proof ]; then
 		echo -e "${RED}fail${NC}";
+		return 1;
 	    fi
 	else
 	    if [ $prover_exit_code -eq "2" ]; then
