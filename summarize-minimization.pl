@@ -228,3 +228,12 @@ foreach my $principle (@all_used_principles) {
   my $padding_for_this_principle = $length_of_longest_principle - $principle_length;
   print $principle, copy_string (' ', $padding_for_this_principle), ' |    ', $vampire_marking, '    |    ', $eprover_marking, '    |    ', $prover9_marking, , '    |', "\n";
 }
+
+# counts
+
+print copy_string ('=', $padding + length ('Principle') + 1),                           '|=========|=========|=========|', "\n";
+
+$padding = abs (length ('Counts') - $length_of_longest_principle);
+$half_padding = $padding / 2;
+
+print copy_string (' ', $half_padding), 'Counts', copy_string (' ', $half_padding + 1), ' |    ', scalar @vampire_final_principles, '    |    ', scalar @eprover_final_principles, '    |    ', scalar @prover9_final_principles, '    |    ', "\n";
