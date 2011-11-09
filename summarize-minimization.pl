@@ -14,17 +14,30 @@ sub copy_string {
 
 sub last_successful_proof_in_dir {
   my $dir = shift;
-  my $last = `find "$dir" -type f -name "*.used-principles" | xargs ls -t | head -n 1`;
-  chomp $last;
-  return $last;
+  my @candidates = `find "$dir" -type f -name "*.used-principles" | xargs ls -t`;
+  chomp @candidates;
+  my $num_candidates = scalar @candidates;
+  my $i = 0;
+  my $last_one = undef;
+  while (not (defined $last_one) && $i < $num_candidates) {
+    my $candidate = $candidates[$i];
+    if (-z $candidate) {
+      $i++;
+    } else {
+      $last_one = $candidate;
+    }
+  }
+  if ($i != 0 and defined $last_one) {
+    print STDERR ("Warning: the most recent proof file in $dir is empty, and hence unusual;\nWe will cull premises from $last_one as the final successful minimization.\n")
+  }
+  return $last_one;
 }
 
-sub principles_of_last_successful_proof_in_dir {
-  my $dir = shift;
-  my $last_successful_proof = last_successful_proof_in_dir ($dir);
-  my @final_principles = `cat "$last_successful_proof" | sort -u | uniq`;
-  chomp @final_principles;
-  return \@final_principles;
+sub principles_of_proof {
+  my $proof = shift;
+  my @principles = `cat "$proof" | sort -u | uniq`;
+  chomp @principles;
+  return \@principles;
 }
 
 sub count_proofs_in_dir {
@@ -87,31 +100,40 @@ foreach my $prover (@provers) {
     exit 1;
   }
   my $num_used_principles_files = count_used_principles_in_dir ($prover_dir);
-  unless ($num_used_principles_files == $num_proofs) {
-    print 'Error: the number of used-principles files in the ', $prover, ' subdirectory (', $num_used_principles_files, ') differs from the number of proofs (', $num_proofs, ')', "\n";
-    exit 1;
-  }
+  # unless ($num_used_principles_files == $num_proofs) {
+  #   print 'Error: the number of used-principles files in the ', $prover, ' subdirectory (', $num_used_principles_files, ') differs from the number of proofs (', $num_proofs, ')', "\n";
+  #   exit 1;
+  # }
 }
 
 my %principles_for_prover = ();
 
 foreach my $prover (@provers) {
   my $proof_dir = subdir_for_prover ($prover);
-  my @final_principles = @{principles_of_last_successful_proof_in_dir ($proof_dir)};
   my %final_principles_table = ();
-  foreach my $principle (@final_principles) {
-    $final_principles_table{$principle} = 0;
+  my $last_proof = last_successful_proof_in_dir ($proof_dir);
+  if (defined $last_proof) {
+    my @final_principles = @{principles_of_proof ($last_proof)};
+    foreach my $principle (@final_principles) {
+      $final_principles_table{$principle} = 0;
+    }
+    $principles_for_prover{$prover} = \%final_principles_table;
+  } else {
+    print STDERR ('Warning: we were unable to find any successful proof for ' . $prover . "\n");
+    $principles_for_prover{$prover} = undef;
   }
-  $principles_for_prover{$prover} = \%final_principles_table;
 }
 
 sub all_used_principles {
   my %all_used_principles = ();
   foreach my $prover (@provers) {
     my $prover_dir = subdir_for_prover ($prover);
-    my @principles = @{principles_of_last_successful_proof_in_dir ($prover_dir)};
-    foreach my $principle (@principles) {
-      $all_used_principles{$principle} = 0;
+    my $last_proof = last_successful_proof_in_dir ($prover_dir);
+    if (defined $last_proof) {
+      my @principles = @{principles_of_proof ($last_proof)};
+      foreach my $principle (@principles) {
+	$all_used_principles{$principle} = 0;
+      }
     }
   }
   my @principles = keys %all_used_principles;
@@ -144,7 +166,12 @@ sub summary_line_for_principle {
 
   my $line = "$principle" . copy_string (' ', $padding) . ' |';
   foreach my $prover (@provers) {
-    my $marking = defined $principles_for_prover{$prover}->{$principle} ? 'x' : ' ';
+    my $marking;
+    if (defined ($principles_for_prover{$prover})) {
+      $marking = defined $principles_for_prover{$prover}->{$principle} ? 'x' : ' ';
+    } else {
+      $marking = '-';
+    }
     $line .= "    $marking    |";
   }
   return $line;
@@ -153,10 +180,14 @@ sub summary_line_for_principle {
 sub counts_line {
   my $line = 'Counts' . copy_string (' ', $padding) . ' |';
   foreach my $prover (@provers) {
-    my %principles_table = %{$principles_for_prover{$prover}};
-    my @principles = keys %principles_table;
-    my $num_principles = scalar @principles;
-    $line .= "    " . $num_principles . "    |";
+    if (defined $principles_for_prover{$prover}) {
+      my %principles_table = %{$principles_for_prover{$prover}};
+      my @principles = keys %principles_table;
+      my $num_principles = scalar @principles;
+      $line .= "    " . $num_principles . "    |";
+    } else {
+      $line .= "    " .       "-"       . "    |";
+    }
   }
   return $line;
 }
