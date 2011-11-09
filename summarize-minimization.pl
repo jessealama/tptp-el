@@ -19,6 +19,14 @@ sub last_successful_proof_in_dir {
   return $last;
 }
 
+sub principles_of_last_successful_proof_in_dir {
+  my $dir = shift;
+  my $last_successful_proof = last_successful_proof_in_dir ($dir);
+  my @final_principles = `cat "$last_successful_proof" | sort -u | uniq`;
+  chomp @final_principles;
+  return \@final_principles;
+}
+
 sub count_proofs_in_dir {
   my $dir = shift;
   my $count = `find "$dir" -type f -name "*.proof" | wc --lines`;
@@ -63,7 +71,6 @@ if (! -d $reprove_dir) {
 }
 
 # The directories of our provers exist and contain at least one proof each
-
 foreach my $prover (@provers) {
   my $prover_dir = subdir_for_prover ($prover);
   if (! -e $prover_dir) {
@@ -86,48 +93,32 @@ foreach my $prover (@provers) {
   }
 }
 
-my $vampire_proof_dir="$reprove_dir/vampire";
-my $eprover_proof_dir="$reprove_dir/eprover";
-my $prover9_proof_dir="$reprove_dir/prover9";
+my %principles_for_prover = ();
 
-my $final_vampire_used_principle_file = last_successful_proof_in_dir ($vampire_proof_dir);
-my $final_eprover_used_principle_file = last_successful_proof_in_dir ($eprover_proof_dir);
-my $final_prover9_used_principle_file = last_successful_proof_in_dir ($prover9_proof_dir);
-
-# Now harvest the the final used-principles files
-
-my @vampire_final_principles = `cat "$final_vampire_used_principle_file" | sort -u | uniq`;
-my @eprover_final_principles = `cat "$final_eprover_used_principle_file" | sort -u | uniq`;
-my @prover9_final_principles = `cat "$final_prover9_used_principle_file" | sort -u | uniq`;
-
-chomp @vampire_final_principles;
-chomp @eprover_final_principles;
-chomp @prover9_final_principles;
-
-# For efficiency, make a hash table for each of the principle lists
-
-my %vampire_final_principles_table = ();
-
-foreach my $principle (@vampire_final_principles) {
-  $vampire_final_principles_table{$principle} = 0;
+foreach my $prover (@provers) {
+  my $proof_dir = subdir_for_prover ($prover);
+  my @final_principles = @{principles_of_last_successful_proof_in_dir ($proof_dir)};
+  my %final_principles_table = ();
+  foreach my $principle (@final_principles) {
+    $final_principles_table{$principle} = 0;
+  }
+  $principles_for_prover{$prover} = \%final_principles_table;
 }
 
-my %eprover_final_principles_table = ();
-
-foreach my $principle (@eprover_final_principles) {
-  $eprover_final_principles_table{$principle} = 0;
+sub all_used_principles {
+  my %all_used_principles = ();
+  foreach my $prover (@provers) {
+    my $prover_dir = subdir_for_prover ($prover);
+    my @principles = @{principles_of_last_successful_proof_in_dir ($prover_dir)};
+    foreach my $principle (@principles) {
+      $all_used_principles{$principle} = 0;
+    }
+  }
+  my @principles = keys %all_used_principles;
+  return \@principles;
 }
 
-my %prover9_final_principles_table = ();
-
-foreach my $principle (@prover9_final_principles) {
-  $prover9_final_principles_table{$principle} = 0;
-}
-
-# Mash them all together
-
-my @all_used_principles = `cat $final_vampire_used_principle_file $final_eprover_used_principle_file $final_prover9_used_principle_file | sort -u | uniq`;
-chomp @all_used_principles;
+my @all_principles = @{all_used_principles ()};
 
 # Now emit a table summarizing things
 
@@ -135,7 +126,7 @@ chomp @all_used_principles;
 
 my $length_of_longest_principle = 0;
 
-foreach my $principle (@all_used_principles) {
+foreach my $principle (@all_principles) {
   my $len = length $principle;
   if ($len > $length_of_longest_principle) {
     $length_of_longest_principle = $len;
@@ -147,13 +138,34 @@ my $padding = abs (length ('Principle') - $length_of_longest_principle);
 print 'Principle', copy_string (' ', $padding + 1),                       '| vampire | eprover | prover9 |', "\n";
 print copy_string ('=', $padding + length ('Principle') + 1),             '|=========|=========|=========|', "\n";
 
-foreach my $principle (@all_used_principles) {
+sub summary_line_for_principle {
+  my $principle = shift;
+  my $padding = shift;
+
+  my $line = "$principle" . copy_string (' ', $padding) . ' |';
+  foreach my $prover (@provers) {
+    my $marking = defined $principles_for_prover{$prover}->{$principle} ? 'x' : ' ';
+    $line .= "    $marking    |";
+  }
+  return $line;
+}
+
+sub counts_line {
+  my $line = 'Counts' . copy_string (' ', $padding) . ' |';
+  foreach my $prover (@provers) {
+    my %principles_table = %{$principles_for_prover{$prover}};
+    my @principles = keys %principles_table;
+    my $num_principles = scalar @principles;
+    $line .= "    " . $num_principles . "    |";
+  }
+  return $line;
+}
+
+foreach my $principle (@all_principles) {
   my $principle_length = length $principle;
-  my $vampire_marking = defined $vampire_final_principles_table{$principle} ? 'x' : ' ';
-  my $eprover_marking = defined $eprover_final_principles_table{$principle} ? 'x' : ' ';
-  my $prover9_marking = defined $prover9_final_principles_table{$principle} ? 'x' : ' ';
   my $padding_for_this_principle = $length_of_longest_principle - $principle_length;
-  print $principle, copy_string (' ', $padding_for_this_principle), ' |    ', $vampire_marking, '    |    ', $eprover_marking, '    |    ', $prover9_marking, , '    |', "\n";
+  my $summary_line = summary_line_for_principle ($principle, $padding_for_this_principle);
+  print $summary_line, "\n";
 }
 
 # counts
@@ -162,4 +174,4 @@ print copy_string ('=', $padding + length ('Principle') + 1), '|=========|======
 
 $padding = abs (length ('Counts') - $length_of_longest_principle);
 
-print 'Counts', copy_string (' ', $padding), ' |    ', scalar @vampire_final_principles, '    |    ', scalar @eprover_final_principles, '    |    ', scalar @prover9_final_principles, '    |    ', "\n";
+print counts_line (), "\n";
