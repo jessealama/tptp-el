@@ -12,68 +12,12 @@ sub copy_string {
   return $final_string;
 }
 
-if (scalar @ARGV == 0) {
-  print 'Usage: summarize-minimization.pl REPROVE-DIRECTORY', "\n";
-  exit 1;
+sub last_successful_proof_in_dir {
+  my $dir = shift;
+  my $last = `find "$dir" -type f -name "*.used-principles" | xargs ls -t | head -n 1`;
+  chomp $last;
+  return $last;
 }
-
-my $reprove_dir = $ARGV[0];
-
-if (! -e $reprove_dir) {
-  print 'Error: the supplied reprove directory ', $reprove_dir, ' does not exist.', "\n";
-  exit 1;
-}
-
-if (! -d $reprove_dir) {
-  print 'Error: the supplied reprove directory ', $reprove_dir, ' is not actually a directory.', "\n";
-  exit 1;
-}
-
-######################################################################
-## Sanity checking
-######################################################################
-
-# The directories of our provers exist and contain at least one proof each
-
-my $vampire_proof_dir="$reprove_dir/vampire";
-my $eprover_proof_dir="$reprove_dir/eprover";
-my $prover9_proof_dir="$reprove_dir/prover9";
-
-# Existence
-
-if (! -e $vampire_proof_dir) {
-  print 'Error: the required vampire subdirectory of ', $reprove_dir, ' is missing.', "\n";
-  exit 1;
-}
-
-if (! -e $eprover_proof_dir) {
-  print 'Error: the required eprover subdirectory of ', $reprove_dir, ' is missing.', "\n";
-  exit 1;
-}
-
-if (! -e $prover9_proof_dir) {
-  print 'Error: the required prover9 subdirectory of ', $reprove_dir, ' is missing.', "\n";
-  exit 1;
-}
-
-# We actually have directories
-
-if (! -d $vampire_proof_dir) {
-  print 'Error: the vampire subdirectory of ', $reprove_dir, ' is not actually a directory.', "\n";
-  exit 1;
-}
-
-if (! -d $eprover_proof_dir) {
-  print 'Error: the eprover subdirectory of ', $reprove_dir, ' is not actually a directory.', "\n";
-  exit 1;
-}
-
-if (! -d $prover9_proof_dir) {
-  print 'Error: the prover9 subdirectory of ', $reprove_dir, ' is not actually a directory.', "\n";
-  exit 1;
-}
-
-# Each prover subdirectory has at least one proof in it
 
 sub count_proofs_in_dir {
   my $dir = shift;
@@ -89,55 +33,62 @@ sub count_used_principles_in_dir {
   return $count;
 }
 
-my $num_vampire_proofs = count_proofs_in_dir ($vampire_proof_dir);
-my $num_eprover_proofs = count_proofs_in_dir ($eprover_proof_dir);
-my $num_prover9_proofs = count_proofs_in_dir ($prover9_proof_dir);
-
-if ($num_vampire_proofs == 0) {
-  print 'Error: we found no proofs in the vampire subdirectory of ', $reprove_dir, '.', "\n";
+if (scalar @ARGV == 0) {
+  print 'Usage: summarize-minimization.pl REPROVE-DIRECTORY', "\n";
   exit 1;
 }
 
-if ($num_eprover_proofs == 0) {
-  print 'Error: we found no proofs in the eprover subdirectory of ', $reprove_dir, '.', "\n";
+my $reprove_dir = $ARGV[0];
+
+sub subdir_for_prover {
+  my $prover = shift;
+  chomp $prover;
+  return "$reprove_dir/$prover";
+}
+
+my @provers = ('vampire', 'eprover', 'prover9');
+
+######################################################################
+## Sanity checking
+######################################################################
+
+if (! -e $reprove_dir) {
+  print 'Error: the supplied reprove directory ', $reprove_dir, ' does not exist.', "\n";
   exit 1;
 }
 
-if ($num_prover9_proofs == 0) {
-  print 'Error: we found no proofs in the prover9 subdirectory of ', $reprove_dir, '.', "\n";
+if (! -d $reprove_dir) {
+  print 'Error: the supplied reprove directory ', $reprove_dir, ' is not actually a directory.', "\n";
   exit 1;
 }
 
-# Check that we have the "used-principles" file for the final proof of
-# each prover.
+# The directories of our provers exist and contain at least one proof each
 
-my $num_vampire_used_principles_files = count_used_principles_in_dir ($vampire_proof_dir);
-my $num_eprover_used_principles_files = count_used_principles_in_dir ($eprover_proof_dir);
-my $num_prover9_used_principles_files = count_used_principles_in_dir ($prover9_proof_dir);
-
-# Sanity check: the number of used-principles files is equal to the number of proofs
-
-unless ($num_vampire_used_principles_files == $num_vampire_proofs) {
-  print 'Error: the number of used-principles files in the vampire subdirectory (', $num_vampire_used_principles_files, ') differs from the number of vampire proofs (', $num_vampire_proofs, ')', "\n";
-  exit 1;
+foreach my $prover (@provers) {
+  my $prover_dir = subdir_for_prover ($prover);
+  if (! -e $prover_dir) {
+    print 'Error: the required ', $prover, ' subdirectory of ', $reprove_dir, ' is missing.', "\n";
+    exit 1;
+  }
+  if (! -d $prover_dir) {
+    print 'Error: the ', $prover, ' subdirectory of ', $reprove_dir, ' is not actually a directory.', "\n";
+    exit 1;
+  }
+  my $num_proofs = count_proofs_in_dir ($prover_dir);
+  if ($num_proofs == 0) {
+    print 'Error: we found no proofs in the ', $prover, '  subdirectory of ', $reprove_dir, '.', "\n";
+    exit 1;
+  }
+  my $num_used_principles_files = count_used_principles_in_dir ($prover_dir);
+  unless ($num_used_principles_files == $num_proofs) {
+    print 'Error: the number of used-principles files in the ', $prover, ' subdirectory (', $num_used_principles_files, ') differs from the number of proofs (', $num_proofs, ')', "\n";
+    exit 1;
+  }
 }
 
-unless ($num_eprover_used_principles_files == $num_eprover_proofs) {
-  print 'Error: the number of used-principles files in the eprover subdirectory (', $num_eprover_used_principles_files, ') differs from the number of eprover proofs (', $num_eprover_proofs, ')', "\n";
-  exit 1;
-}
-
-unless ($num_prover9_used_principles_files == $num_prover9_proofs) {
-  print 'Error: the number of used-principles files in the prover9 subdirectory (', $num_prover9_used_principles_files, ') differs from the number of prover9 proofs (', $num_prover9_proofs, ')', "\n";
-  exit 1;
-}
-
-sub last_successful_proof_in_dir {
-  my $dir = shift;
-  my $last = `find "$vampire_proof_dir" -type f -name "*.used-principles" | xargs ls -t | head -n 1`;
-  chomp $last;
-  return $last;
-}
+my $vampire_proof_dir="$reprove_dir/vampire";
+my $eprover_proof_dir="$reprove_dir/eprover";
+my $prover9_proof_dir="$reprove_dir/prover9";
 
 my $final_vampire_used_principle_file = last_successful_proof_in_dir ($vampire_proof_dir);
 my $final_eprover_used_principle_file = last_successful_proof_in_dir ($eprover_proof_dir);
