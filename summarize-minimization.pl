@@ -2,7 +2,7 @@
 
 use strict;
 
-use POSIX qw(floor);
+use POSIX qw(floor ceil);
 
 sub copy_string {
   my $string = shift;
@@ -218,9 +218,10 @@ foreach my $principle (@all_used_principles) {
 
 my $padding = abs (length ('Principle') - $length_of_longest_principle);
 my $half_padding = floor ($padding / 2);
+my $odd = $half_padding == ceil ($padding / 2) ? 1 : 0;
 
 print copy_string (' ', $half_padding), 'Principle', copy_string (' ', $half_padding), ' | vampire | eprover | prover9 |', "\n";
-print copy_string ('=', $padding + length ('Principle') + 1),                           '|=========|=========|=========|', "\n";
+print copy_string ('=', $padding + length ('Principle') + $odd),                           '|=========|=========|=========|', "\n";
 
 foreach my $principle (@all_used_principles) {
   my $principle_length = length $principle;
@@ -237,5 +238,6 @@ print copy_string ('=', $padding + length ('Principle') + 1),                   
 
 $padding = abs (length ('Counts') - $length_of_longest_principle);
 $half_padding = floor ($padding / 2);
+$odd = $half_padding == ceil ($padding / 2) ? 0 : 1;
 
-print copy_string (' ', $half_padding), 'Counts', copy_string (' ', $half_padding + 1), ' |    ', scalar @vampire_final_principles, '    |    ', scalar @eprover_final_principles, '    |    ', scalar @prover9_final_principles, '    |    ', "\n";
+print copy_string (' ', $half_padding), 'Counts', copy_string (' ', $half_padding + $odd), ' |    ', scalar @vampire_final_principles, '    |    ', scalar @eprover_final_principles, '    |    ', scalar @prover9_final_principles, '    |    ', "\n";
