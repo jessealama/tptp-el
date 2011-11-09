@@ -237,7 +237,11 @@ function keep_proving() {
 	num_used_principles=`cat $used_principles | wc -l | sed -e 's/^ *//'`;
 	num_unused_principles=`cat $unused_principles | wc -l | sed -e 's/^ *//'`;
 
-	echo -e "${GREEN}proof found${NC} [${BLUE}$num_used_principles${NC}/${GRAY}$num_unused_principles${NC} principles ${BLUE}used${NC}/${GRAY}unused${NC}]";
+	if [ -s $used_principles ]; then
+	    echo -e "${GREEN}proof found${NC} [${BLUE}$num_used_principles${NC}/${GRAY}$num_unused_principles${NC} principles ${BLUE}used${NC}/${GRAY}unused${NC}]";
+	else
+	    echo -e "${GREEN}proof found${NC} [${RED}$num_used_principles${NC}/${GRAY}$num_unused_principles${NC} principles ${RED}used${NC}/${GRAY}unused${NC}]";
+	fi
 
 	echo "$conjecture_formula" > $trimmed_theory;
 	for principle in `cat $used_principles`; do
