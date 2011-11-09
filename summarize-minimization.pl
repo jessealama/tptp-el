@@ -2,6 +2,8 @@
 
 use strict;
 
+use POSIX qw(floor);
+
 sub copy_string {
   my $string = shift;
   my $num_copies = shift;
@@ -215,7 +217,7 @@ foreach my $principle (@all_used_principles) {
 }
 
 my $padding = abs (length ('Principle') - $length_of_longest_principle);
-my $half_padding = $padding / 2;
+my $half_padding = floor ($padding / 2);
 
 print copy_string (' ', $half_padding), 'Principle', copy_string (' ', $half_padding), ' | vampire | eprover | prover9 |', "\n";
 print copy_string ('=', $padding + length ('Principle') + 1),                           '|=========|=========|=========|', "\n";
@@ -234,6 +236,6 @@ foreach my $principle (@all_used_principles) {
 print copy_string ('=', $padding + length ('Principle') + 1),                           '|=========|=========|=========|', "\n";
 
 $padding = abs (length ('Counts') - $length_of_longest_principle);
-$half_padding = $padding / 2;
+$half_padding = floor ($padding / 2);
 
 print copy_string (' ', $half_padding), 'Counts', copy_string (' ', $half_padding + 1), ' |    ', scalar @vampire_final_principles, '    |    ', scalar @eprover_final_principles, '    |    ', scalar @prover9_final_principles, '    |    ', "\n";
