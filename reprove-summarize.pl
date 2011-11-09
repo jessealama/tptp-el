@@ -55,14 +55,14 @@ sub principles_of_proof {
 
 sub count_proofs_in_dir {
   my $dir = shift;
-  my $count = `find "$dir" -type f -name "*.proof" | wc --lines`;
+  my $count = `find "$dir" -type f -name "*.proof" | wc -l`;
   chomp $count;
   return $count;
 }
 
 sub count_used_principles_in_dir {
   my $dir = shift;
-  my $count = `find "$dir" -type f -name "*.used-principles" | wc --lines`;
+  my $count = `find "$dir" -type f -name "*.used-principles" | wc -l`;
   chomp $count;
   return $count;
 }
