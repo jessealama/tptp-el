@@ -217,7 +217,7 @@ foreach my $principle (@all_used_principles) {
 }
 
 my $padding = abs (length ('Principle') - $length_of_longest_principle);
-my $half_padding = floor ($padding / 2);
+my $half_padding = ceil ($padding / 2);
 my $odd = $half_padding == ceil ($padding / 2) ? 1 : 0;
 
 print copy_string (' ', $half_padding), 'Principle', copy_string (' ', $half_padding + $odd), '| vampire | eprover | prover9 |', "\n";
