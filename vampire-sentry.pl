@@ -13,6 +13,8 @@ use strict;
 while (defined (my $line = <STDIN>)) {
   if ($line =~ /Termination reason: Satisfiable/) {
     exit 2;
+  } elsif ($line =~ /SZS status Timeout/) {
+    exit 3;
   } else {
     print $line;
   }
