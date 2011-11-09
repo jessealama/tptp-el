@@ -221,7 +221,7 @@ my $half_padding = floor ($padding / 2);
 my $odd = $half_padding == ceil ($padding / 2) ? 1 : 0;
 
 print copy_string (' ', $half_padding), 'Principle', copy_string (' ', $half_padding), ' | vampire | eprover | prover9 |', "\n";
-print copy_string ('=', $padding + length ('Principle') + $odd),                           '|=========|=========|=========|', "\n";
+print copy_string ('=', $padding + length ('Principle') + $odd),                        '|=========|=========|=========|', "\n";
 
 foreach my $principle (@all_used_principles) {
   my $principle_length = length $principle;
