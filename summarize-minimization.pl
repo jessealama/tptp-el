@@ -132,7 +132,7 @@ foreach my $prover (@provers) {
     }
     $principles_for_prover{$prover} = \%final_principles_table;
   } else {
-    print STDERR ('Warning: we were unable to find any successful proof for ' . $prover . "\n");
+    print STDERR ('Warning: we were unable to find any successful proof for ' . $prover . ' under ' . $proof_dir . "\n");
     $principles_for_prover{$prover} = undef;
   }
 }
