@@ -75,25 +75,35 @@ if (! -d $prover9_proof_dir) {
 
 # Each prover subdirectory has at least one proof in it
 
-my $num_vampire_proofs = `find "$vampire_proof_dir" -type f -name "*.proof" | wc --lines`;
-my $num_eprover_proofs = `find "$eprover_proof_dir" -type f -name "*.proof" | wc --lines`;
-my $num_prover9_proofs = `find "$prover9_proof_dir" -type f -name "*.proof" | wc --lines`;
+sub count_proofs_in_dir {
+  my $dir = shift;
+  my $count = `find "$dir" -type f -name "*.proof" | wc --lines`;
+  chomp $count;
+  return $count;
+}
 
-chomp $num_vampire_proofs;
-chomp $num_eprover_proofs;
-chomp $num_eprover_proofs;
+sub count_used_principles_in_dir {
+  my $dir = shift;
+  my $count = `find "$dir" -type f -name "*.used-principles" | wc --lines`;
+  chomp $count;
+  return $count;
+}
 
-if ($num_vampire_proofs eq 0) {
+my $num_vampire_proofs = count_proofs_in_dir ($vampire_proof_dir);
+my $num_eprover_proofs = count_proofs_in_dir ($eprover_proof_dir);
+my $num_prover9_proofs = count_proofs_in_dir ($prover9_proof_dir);
+
+if ($num_vampire_proofs == 0) {
   print 'Error: we found no proofs in the vampire subdirectory of ', $reprove_dir, '.', "\n";
   exit 1;
 }
 
-if ($num_eprover_proofs eq 0) {
+if ($num_eprover_proofs == 0) {
   print 'Error: we found no proofs in the eprover subdirectory of ', $reprove_dir, '.', "\n";
   exit 1;
 }
 
-if ($num_prover9_proofs eq 0) {
+if ($num_prover9_proofs == 0) {
   print 'Error: we found no proofs in the prover9 subdirectory of ', $reprove_dir, '.', "\n";
   exit 1;
 }
@@ -101,13 +111,9 @@ if ($num_prover9_proofs eq 0) {
 # Check that we have the "used-principles" file for the final proof of
 # each prover.
 
-my $num_vampire_used_principles_files = `find "$vampire_proof_dir" -type f -name "*.used-principles" | wc --lines`;
-my $num_eprover_used_principles_files = `find "$eprover_proof_dir" -type f -name "*.used-principles" | wc --lines`;
-my $num_prover9_used_principles_files = `find "$prover9_proof_dir" -type f -name "*.used-principles" | wc --lines`;
-
-chomp $num_vampire_used_principles_files;
-chomp $num_eprover_used_principles_files;
-chomp $num_prover9_used_principles_files;
+my $num_vampire_used_principles_files = count_used_principles_in_dir ($vampire_proof_dir);
+my $num_eprover_used_principles_files = count_used_principles_in_dir ($eprover_proof_dir);
+my $num_prover9_used_principles_files = count_used_principles_in_dir ($prover9_proof_dir);
 
 # Sanity check: the number of used-principles files is equal to the number of proofs
 
@@ -126,45 +132,16 @@ unless ($num_prover9_used_principles_files == $num_prover9_proofs) {
   exit 1;
 }
 
-my $final_vampire_used_principle_file = `find "$vampire_proof_dir" -type f -name "*.used-principles" | xargs ls -t | head -n 1`;
-my $final_eprover_used_principle_file = `find "$eprover_proof_dir" -type f -name "*.used-principles" | xargs ls -t | head -n 1`;
-my $final_prover9_used_principle_file = `find "$prover9_proof_dir" -type f -name "*.used-principles" | xargs ls -t | head -n 1`;
-
-chomp $final_vampire_used_principle_file;
-chomp $final_eprover_used_principle_file;
-chomp $final_prover9_used_principle_file;
-
-# More sanity checks: we actually got a real file
-
-if (-z $final_vampire_used_principle_file) {
-  print 'Error: something went wrong finding the final vampire used-principles file.', "\n";
-  exit 1;
+sub last_successful_proof_in_dir {
+  my $dir = shift;
+  my $last = `find "$vampire_proof_dir" -type f -name "*.used-principles" | xargs ls -t | head -n 1`;
+  chomp $last;
+  return $last;
 }
 
-if (-z $final_eprover_used_principle_file) {
-  print 'Error: something went wrong finding the final eprover used-principles file.', "\n";
-  exit 1;
-}
-
-if (-z $final_prover9_used_principle_file) {
-  print 'Error: something went wrong finding the final prover9 used-principles file.', "\n";
-  exit 1;
-}
-
-if (! -e $final_vampire_used_principle_file) {
-  print 'Error: we think that ', $final_vampire_used_principle_file, ' is the final used-premises file for vampire, but that file somehow does not exist.';
-  exit 1;
-}
-
-if (! -e $final_eprover_used_principle_file) {
-  print 'Error: we think that ', $final_eprover_used_principle_file, ' is the final used-premises file for eprover, but that file somehow does not exist.';
-  exit 1;
-}
-
-if (! -e $final_prover9_used_principle_file) {
-  print 'Error: we think that ', $final_prover9_used_principle_file, ' is the final used-premises file for prover9, but that file somehow does not exist.';
-  exit 1;
-}
+my $final_vampire_used_principle_file = last_successful_proof_in_dir ($vampire_proof_dir);
+my $final_eprover_used_principle_file = last_successful_proof_in_dir ($eprover_proof_dir);
+my $final_prover9_used_principle_file = last_successful_proof_in_dir ($prover9_proof_dir);
 
 # Now harvest the the final used-principles files
 
