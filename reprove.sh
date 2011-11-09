@@ -74,7 +74,7 @@ scripts="$eprover_scripts $vampire_scripts $prover9_scripts $tptp_scripts";
 
 for script in $scripts; do
     if [ ! -e $script ]; then
-	error "The required script '$script' is missing";
+	error "The required script '$script' is missing from $script_home";
 	exit 1;
     fi
     if [ ! -r $script ]; then
