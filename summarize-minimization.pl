@@ -2,6 +2,14 @@
 
 use strict;
 
+use POSIX qw(floor);
+
+# swiped from the perldocs for log
+sub log10 {
+  my $n = shift;
+  return log($n)/log(10);
+}
+
 sub copy_string {
   my $string = shift;
   my $num_copies = shift;
@@ -189,7 +197,8 @@ sub counts_line {
       my %principles_table = %{$principles_for_prover{$prover}};
       my @principles = keys %principles_table;
       my $num_principles = scalar @principles;
-      $line .= "    " . $num_principles . "    |";
+      my $num_digits_in_num_principles = floor (log10 ($num_principles));
+      $line .= "    " . $num_principles . copy_string (' ', 4 - $num_digits_in_num_principles) . '|';
     } else {
       $line .= "    " .       "-"       . "    |";
     }
