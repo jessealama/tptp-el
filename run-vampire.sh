@@ -35,4 +35,5 @@ function massage_for_vampire() {
 #     | grep -E '(^[0-9_A-Z]\.*\.)|(^BDD definition)'
 
 massage_for_vampire $1 \
-    | vampire -mode casc -output_axiom_names on;
+    | vampire -mode casc -output_axiom_names on \
+    | vampire-sentry.pl;
