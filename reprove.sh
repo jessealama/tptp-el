@@ -220,10 +220,17 @@ function keep_proving() {
 	prover_exit_code="$?";
 
         # if this didn't work, then don't go any further
-	if [ $prover_exit_code -ne "0" ]; then
-
+	if [ $prover_exit_code -eq "0" ]; then
+	    # was any proof emitted?
+	    if [ ! -s $proof ]; then
+		echo -e "${RED}fail${NC}";
+	    fi
+	else
 	    if [ $prover_exit_code -eq "2" ]; then
-		echo -e "${RED}countersatisfiable!${NC}";
+		echo -e "${RED}countersatisfiable${NC}";
+		return 1;
+	    elif [ $prover_exit_code -eq "3" ]; then
+		echo -e "${RED}timeout${NC}";
 		return 1;
 	    else
 		echo -e "${RED}fail${NC}";
