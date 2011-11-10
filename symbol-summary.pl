@@ -4,6 +4,8 @@ use strict;
 
 use POSIX qw(floor);
 
+use Term::ANSIColor;
+
 # swiped from the perldocs for log
 sub log10 {
   my $n = shift;
@@ -125,7 +127,11 @@ if (scalar @function_symbol_infos > 0) {
       exit 1;
     }
     my $length_of_this_symbol = length $symbol;
-    print $symbol, copy_string (' ', $length_of_longest_symbol_name - $length_of_this_symbol), ' |   ', $arity, '   | ', $num_occurrences, "\n";
+    if ($num_occurrences == 1) {
+      print colored ($symbol, 'red'), copy_string (' ', $length_of_longest_symbol_name - $length_of_this_symbol), ' |   ', $arity, '   | ', $num_occurrences, "\n";
+    } else {
+      print $symbol, copy_string (' ', $length_of_longest_symbol_name - $length_of_this_symbol), ' |   ', $arity, '   | ', $num_occurrences, "\n";
+    }
   }
 }
 
@@ -143,7 +149,11 @@ if (scalar @predicate_symbol_infos > 0) {
       exit 1;
     }
     my $length_of_this_symbol = length $symbol;
-    print $symbol, copy_string (' ', $length_of_longest_symbol_name - $length_of_this_symbol), ' |   ', $arity, '   | ', $num_occurrences, "\n";
+    if ($num_occurrences == 1) {
+      print colored ($symbol, 'red'), copy_string (' ', $length_of_longest_symbol_name - $length_of_this_symbol), ' |   ', $arity, '   | ', $num_occurrences, "\n";
+    } else {
+      print $symbol, copy_string (' ', $length_of_longest_symbol_name - $length_of_this_symbol), ' |   ', $arity, '   | ', $num_occurrences, "\n";
+    }
   }
 }
 
