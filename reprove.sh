@@ -106,6 +106,11 @@ function ensure_file_exists_and_is_readable() {
 	exit 1;
     fi
 
+    if [ -d "$1" ]; then
+	error "The supplied theory '$1' is already the name of a directory.";
+	exit 1;
+    fi
+
     if [ ! -e $1 ]; then
 	error "The supplied theory '$1' doesn't exist.";
 	exit 1;
