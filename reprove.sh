@@ -100,8 +100,8 @@ function ensure_sensible_tptp_theory() {
     local unable_to_open=`tptp4X -x -N -V $1 | grep 'ERROR: Cannot open'`;
 
     if [ ! -z "$unable_to_open" ]; then
-	error "The TPTP theory at '$1' has include directives that cannot be processed";
-	echo "Here is the error message:";
+	error "The TPTP theory at '$1' has include directives that cannot be processed.";
+	echo "Here is the error message from TPTP4X:";
 	echo "$unable_to_open";
 	exit 1;
     fi
