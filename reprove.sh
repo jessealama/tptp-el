@@ -88,9 +88,12 @@ for script in $scripts; do
 done
 
 function ensure_sensible_tptp_theory() {
-    tptp4X -x -N -V $1 > /dev/null 2>&1;
+    tptp4X -c -x -N -V $1 > /dev/null 2>&1;
     if [ $? -ne "0" ]; then
+	local error_message=`tptp4X -c -x -N -V $1`;
 	error "The TPTP theory at '$1' fails to be a valid TPTP file.";
+	echo "The error message from the tptp4X tool is:";
+	echo "$error_message";
 	exit 1;
     fi
 
