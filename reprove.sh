@@ -325,7 +325,6 @@ fi
 theory_basename=`basename $theory`;
 
 mkdir -p $work_directory;
-cp $theory $work_directory;
 
 echo "================================================================================";
 theory_name_length=${#theory_basename};
@@ -338,7 +337,7 @@ done
 echo "$theory_basename";
 echo "================================================================================";
 
-tptp4X -V -N -uhuman -c -x $theory
+tptp4X -N -V -c -x -uhuman $theory | tee "$work_directory/$theory_basename";
 
 echo "================================================================================";
 
