@@ -35,7 +35,7 @@ function error() {
 
 vampire_programs="vampire";
 eprover_programs="eprover epclextract";
-prover9_programs="tptp_to_ladr prover9 prooftrans"
+prover9_programs="tptp_to_ladr prover9 prooftrans mace4"
 tptp_programs="tptp4X tptp2X";
 
 needed_programs="$vampire_programs $eprover_programs $prover9_programs $tptp_programs";
@@ -66,7 +66,8 @@ run_prover9_script="$script_home/run-prover9.sh";
 prover9_used_principles_script="$script_home/prover9-used-principles.sh";
 prover9_unused_principles_script="$script_home/prover9-unused-principles.sh";
 prover9_sentry_script="$script_home/prover9-sentry.pl";
-prover9_scripts="$run_prover9_script $prover9_used_principles_script $prover9_unused_principles_script $prover9_sentry_script"
+mace4_script="$script_home/run-mace4.sh";
+prover9_scripts="$run_prover9_script $prover9_used_principles_script $prover9_unused_principles_script $prover9_sentry_script $mace4_script"
 
 tptp_scripts="$script_home/tptp-labels.sh";
 
@@ -368,6 +369,43 @@ echo "==========================================================================
 tptp4X -N -V -c -x -umachine $theory \
     | grep --invert-match ',conjecture,' \
     | tptp4X -uhuman -- > "$work_directory/$axiom_file";
+
+echo "                              Consistency Check";
+
+echo "================================================================================";
+
+# Consistency checking, 1: the axioms are consistent
+
+echo -n "Axioms alone..........";
+
+axiom_model_file="$work_directory/$axiom_file.model";
+axiom_model_file_basename=`basename $axiom_model_file`;
+
+$mace4_script $axiom_file $timeout > $axiom_model_file 2> /dev/null;
+
+if [ $? -eq "0" ]; then
+    echo -e "${GREEN}satisfiable${NC} (saved in $axiom_model_file_basename)";
+else
+    echo -e "${RED}unknown${NC}"
+fi
+
+# Consistency checking, 2: the axioms + the conjecture are consistent
+
+echo -n "Axioms + conjecture...";
+
+whole_problem_model_file="$work_directory/$theory_basename.model";
+whole_problem_model_file_basename=`basename $whole_problem_model_file`;
+
+$mace4_script $axiom_file $timeout 1 > $whole_problem_model_file 2> /dev/null;
+# promote conjecture(s) to axioms  ^
+
+if [ $? -eq "0" ]; then
+    echo -e "${GREEN}satisfiable${NC} (saved in $whole_problem_model_file_basename)";
+else
+    echo "${RED}unknown${NC}";
+fi
+
+echo "================================================================================";
 
 keep_proving $run_eprover_script $eprover_used_principles_script $eprover_unused_principles_script "eprover";
 keep_proving $run_vampire_script $vampire_used_principles_script $vampire_unused_principles_script "vampire";
