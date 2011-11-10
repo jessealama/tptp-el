@@ -310,8 +310,6 @@ if [ -z "$2" ]; then
 	candidate_work_directory="${theory_dirname}/${theory_basename_sans_extension}-${try}";
     done
     work_directory="$candidate_work_directory";
-    # DEBUG
-    echo "We computed the work_directory as $work_directory";
 else
     work_directory=$2;
 fi
