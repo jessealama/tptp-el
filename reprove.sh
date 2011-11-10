@@ -302,6 +302,7 @@ theory=$1;
 
 theory_basename=`basename $theory`;
 theory_basename_sans_extension=`echo "$theory_basename" | sed -e 's/\(.*\)\.[^.]*$/\1/'`;
+axiom_file="$theory_basename_sans_extension.ax";
 
 theory_dirname=`dirname $theory`;
 
@@ -361,6 +362,12 @@ echo "==========================================================================
 tptp4X -N -V -c -x -uhuman $theory | tee "$work_directory/$theory_basename";
 
 echo "================================================================================";
+
+# Save the axioms (non-conjecture formulas) of the theory in a
+# separate file
+tptp4X -N -V -c -x -umachine $theory \
+    | grep --invert-match ',conjecture,' \
+    | tptp4X -uhuman -- > "$work_directory/$axiom_file";
 
 keep_proving $run_eprover_script $eprover_used_principles_script $eprover_unused_principles_script "eprover";
 keep_proving $run_vampire_script $vampire_used_principles_script $vampire_unused_principles_script "vampire";
