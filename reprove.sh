@@ -250,9 +250,6 @@ theory=$1;
 theory_basename=`basename $theory`;
 theory_basename_sans_extension=`echo "$theory_basename" | sed -e 's/\(.*\)\.[^.]*$/\1/'`;
 
-# DEBUG
-echo "basename w/o extension: $theory_basename_sans_extension";
-
 theory_dirname=`dirname $theory`;
 
 if [ -z "$2" ]; then
