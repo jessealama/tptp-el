@@ -34,7 +34,8 @@ if (scalar @ARGV > 1) {
 
 my $tptp_file = $ARGV[0];
 
-# Sanity checks: the file exists, is readable, and is a sane TPTP file
+# Sanity checks: the file exists, is readable, we have tptp4X, the input file is a sane TPTP file
+# according to tptp4X, and we have GetSymbols
 
 if (! -e $tptp_file) {
   print "Error: there is no file at '$tptp_file'.";
@@ -46,11 +47,27 @@ if (! -r $tptp_file) {
   exit 1;
 }
 
+my $which_tptp4X = system ('which tptp4X > /dev/null 2>&1');
+my $which_tptp4X_exit_code = $which_tptp4X >> 8;
+
+if ($which_tptp4X_exit_code != 0) {
+  print "Error: we are missing the required tptp4X tool.  Is it in your PATH?\n";
+  exit 1;
+}
+
 my $tptp4X_result = system ("tptp4X -N -V -c -x -umachine $tptp_file > /dev/null 2>&1");
 my $tptp4X_exit_code = $tptp4X_result >> 8;
 
 if ($tptp4X_exit_code != 0) {
   print "Error: the file at '$tptp_file' is not a valid TPTP file.\n";
+  exit 1;
+}
+
+my $which_GetSymbols_result = system ('which GetSymbols > /dev/null 2>&1');
+my $which_GetSymbols_exit_code = $which_GetSymbols_result >> 8;
+
+if ($which_GetSymbols_exit_code != 0) {
+  print "Error: we are missing the required GetSymbols tool.  Is it in your PATH?\n";
   exit 1;
 }
 
