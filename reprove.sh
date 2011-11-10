@@ -126,7 +126,7 @@ prover_timeout="30"; # seconds
 
 function ensure_file_exists_and_is_readable() {
 
-    if [ -z $1 ]; then
+    if [ -z "$1" ]; then
 	error "We need an argument to determine whether a file exists and is readable.";
 	exit 1;
     fi
@@ -136,12 +136,12 @@ function ensure_file_exists_and_is_readable() {
 	exit 1;
     fi
 
-    if [ ! -e $1 ]; then
+    if [ ! -e "$1" ]; then
 	error "The supplied theory '$1' doesn't exist.";
 	exit 1;
     fi
 
-    if [ ! -r $1 ]; then
+    if [ ! -r "$1" ]; then
 	error "The supplied theory '$1' is not readable.";
 	exit 1;
     fi
