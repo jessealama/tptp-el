@@ -311,7 +311,7 @@ if [ -z "$2" ]; then
     try=1;
     candidate_work_directory="${theory_dirname}/${theory_basename_sans_extension}-${try}";
     while [ -e "$candidate_work_directory" -o -d "$candidate_work_directory" ]; do
-	try=$try + 1;
+	try=`expr $try + 1`;
 	candidate_work_directory="${theory_dirname}/${theory_basename_sans_extension}-${try}";
     done
     work_directory="$candidate_work_directory";
