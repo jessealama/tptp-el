@@ -34,9 +34,9 @@ function error() {
 # Check that all the programs that we use here exist and are executable
 
 vampire_programs="vampire";
-eprover_programs="eprove epclextract";
+eprover_programs="eprover epclextract";
 prover9_programs="tptp_to_ladr prover9 prooftrans"
-tptp_programs="tptp4X";
+tptp_programs="tptp4X tptp2X";
 
 needed_programs="$vampire_programs $eprover_programs $prover9_programs $tptp_programs";
 
@@ -53,17 +53,20 @@ script_home=`dirname $0`; # blah
 run_eprover_script="$script_home/run-eprover.sh";
 eprover_used_principles_script="$script_home/eprover-used-principles.sh";
 eprover_unused_principles_script="$script_home/eprover-unused-principles.sh";
-eprover_scripts="$run_eprover_script $eprover_used_principles_script $eprover_unused_principles_script"
+eprover_sentry_script="$script_home/eprover-sentry.pl";
+eprover_scripts="$run_eprover_script $eprover_used_principles_script $eprover_unused_principles_script $eprover_sentry_script"
 
 run_vampire_script="$script_home/run-vampire.sh";
 vampire_used_principles_script="$script_home/vampire-used-principles.sh";
 vampire_unused_principles_script="$script_home/vampire-unused-principles.sh";
-vampire_scripts="$run_vampire_script $vampire_used_principles_script $vampire_unused_principles_script"
+vampire_sentry_script="$script_home/vampire-sentry.pl";
+vampire_scripts="$run_vampire_script $vampire_used_principles_script $vampire_unused_principles_script $vampire_sentry_script"
 
 run_prover9_script="$script_home/run-prover9.sh";
 prover9_used_principles_script="$script_home/prover9-used-principles.sh";
 prover9_unused_principles_script="$script_home/prover9-unused-principles.sh";
-prover9_scripts="$run_prover9_script $prover9_used_principles_script $prover9_unused_principles_script"
+prover9_sentry_script="$script_home/prover9-sentry.pl";
+prover9_scripts="$run_prover9_script $prover9_used_principles_script $prover9_unused_principles_script $prover9_sentry_script"
 
 tptp_scripts="$script_home/tptp-labels.sh";
 
@@ -71,7 +74,7 @@ scripts="$eprover_scripts $vampire_scripts $prover9_scripts $tptp_scripts";
 
 for script in $scripts; do
     if [ ! -e $script ]; then
-	error "The required script '$script' is missing";
+	error "The required script '$script' is missing from $script_home";
 	exit 1;
     fi
     if [ ! -r $script ]; then
@@ -85,11 +88,33 @@ for script in $scripts; do
 done
 
 function ensure_sensible_tptp_theory() {
-    tptp4X -x -N $1 > /dev/null 2>&1;
+    tptp4X -x -N -V $1 > /dev/null 2>&1;
     if [ $? -ne "0" ]; then
 	error "The TPTP theory at '$1' fails to be a valid TPTP file.";
 	exit 1;
     fi
+
+    # tptp4x, when called with -x, will print "ERROR: cannot open ..."
+    # when it can't open the includes.  But then it exits cleanly!
+
+    local unable_to_open=`tptp4X -x -N -V $1 | grep 'ERROR: Cannot open'`;
+
+    if [ ! -z "$unable_to_open" ]; then
+	error "The TPTP theory at '$1' has include directives that cannot be processed.";
+	echo "Here is the error message from TPTP4X:";
+	echo "$unable_to_open";
+	exit 1;
+    fi
+
+    local conjecture=`tptp4X -x -N -V -umachine $1 | grep --count ',conjecture,'`;
+    if [ "$conjecture" -eq "0" ]; then
+	error "The TPTP theory at '$1' contains no conjecture formula.";
+	exit 1;
+    elif [ "$conjecture" -gt "1" ]; then
+	error "The TPTP theory at '$1' has more than one conjecture formula.";
+	exit 1;
+    fi
+    return 0;
 }
 
 ######################################################################
@@ -169,7 +194,7 @@ function keep_proving() {
     local prover_directory=$work_directory/$prover_name;
     mkdir -p $prover_directory;
 
-    local conjecture_formula=`tptp4X -N -umachine -c $theory | grep ',conjecture,'`;
+    local conjecture_formula=`tptp4X -V -N -umachine -c $theory | grep ',conjecture,'`;
     local theory_basename=`basename $theory`;
     local theory=$theory;
 
@@ -210,10 +235,26 @@ function keep_proving() {
 
 	run_prover_with_timeout $prover_script $theory $proof;
 
+	prover_exit_code="$?";
+
         # if this didn't work, then don't go any further
-	if [ $? -ne "0" ]; then
-	    echo -e "${RED}fail${NC}";
-	    return 1;
+	if [ $prover_exit_code -eq "0" ]; then
+	    # was any proof emitted?
+	    if [ ! -s $proof ]; then
+		echo -e "${RED}fail${NC}";
+		return 1;
+	    fi
+	else
+	    if [ $prover_exit_code -eq "2" ]; then
+		echo -e "${RED}countersatisfiable${NC}";
+		return 1;
+	    elif [ $prover_exit_code -eq "3" ]; then
+		echo -e "${RED}timeout${NC}";
+		return 1;
+	    else
+		echo -e "${RED}fail${NC}";
+		return 1;
+	    fi
 	fi
 
 	$used_principles_script $proof $theory > $used_principles;
@@ -222,11 +263,15 @@ function keep_proving() {
 	num_used_principles=`cat $used_principles | wc -l | sed -e 's/^ *//'`;
 	num_unused_principles=`cat $unused_principles | wc -l | sed -e 's/^ *//'`;
 
-	echo -e "${GREEN}proof found${NC} [${BLUE}$num_used_principles${NC}/${GRAY}$num_unused_principles${NC} principles ${BLUE}used${NC}/${GRAY}unused${NC}]";
+	if [ -s $used_principles ]; then
+	    echo -e "${GREEN}proof found${NC} [${BLUE}$num_used_principles${NC}/${GRAY}$num_unused_principles${NC} principles ${BLUE}used${NC}/${GRAY}unused${NC}]";
+	else
+	    echo -e "${GREEN}proof found${NC} [${RED}$num_used_principles${NC}/${GRAY}$num_unused_principles${NC} principles ${RED}used${NC}/${GRAY}unused${NC}]";
+	fi
 
 	echo "$conjecture_formula" > $trimmed_theory;
 	for principle in `cat $used_principles`; do
-	    tptp4X -N -umachine -c -x $theory | grep "fof($principle," >> $trimmed_theory;
+	    tptp4X -V -N -umachine -c -x $theory | grep "fof($principle," >> $trimmed_theory;
 	done
 
         ## Sanity check: the theory that we just emitted is a sensible TPTP theory
@@ -237,7 +282,7 @@ function keep_proving() {
 
     done
 
-    return;
+    return 0;
 }
 
 ######################################################################
@@ -300,7 +345,6 @@ if [ -d $work_directory ]; then
 fi
 
 mkdir -p $work_directory;
-cp $theory $work_directory;
 
 echo "================================================================================";
 theory_name_length=${#theory_basename};
@@ -313,17 +357,13 @@ done
 echo "$theory_basename";
 echo "================================================================================";
 
-tptp4X -N -uhuman -c -x $theory
+tptp4X -N -V -c -x -uhuman $theory | tee "$work_directory/$theory_basename";
 
 echo "================================================================================";
 
 keep_proving $run_eprover_script $eprover_used_principles_script $eprover_unused_principles_script "eprover";
 keep_proving $run_vampire_script $vampire_used_principles_script $vampire_unused_principles_script "vampire";
-
-# Disable prover9.  The construction of prover9 problems is not
-# correct.
-
-#keep_proving $run_prover9_script $prover9_used_principles_script $prover9_unused_principles_script "prover9";
+keep_proving $run_prover9_script $prover9_used_principles_script $prover9_unused_principles_script "prover9";
 
 echo "================================================================================";
 echo "Done.  Our work has been saved in the directory $work_directory.";

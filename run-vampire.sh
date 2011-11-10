@@ -24,14 +24,12 @@ function massage_for_vampire() {
 	| sed -e 's/,definition,/,axiom,/' \
 	      -e 's/,theorem,/,axiom,/' \
 	      -e 's/,plain,/,axiom,/' \
+	      -e 's/,lemma,/,axiom,/' \
 	      -e 's/,assumption,/,axiom,/' \
 	| sort -u \
         | uniq -u;
 }
 
-# massage_for_vampire $1 \
-#     | vampire -output_axiom_names on \
-#     | grep -E '(^[0-9_A-Z]\.*\.)|(^BDD definition)'
-
 massage_for_vampire $1 \
-    | vampire -output_axiom_names on;
+    | vampire -mode casc -output_axiom_names on \
+    | vampire-sentry.pl;

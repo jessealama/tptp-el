@@ -16,4 +16,5 @@ fi
 ulimit -t $timeout \
     || (echo "Error: '$timeout' is not an acceptable argument to ulimit -t." && exit 1);
 
-eproof --tptp3-in $theory;
+eprover -l4 -xAuto -tAuto -R --tptp3-in $theory \
+    | eprover-sentry.pl
