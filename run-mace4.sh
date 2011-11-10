@@ -27,7 +27,7 @@ timeout=${2-"30"};
 promote_conjectures=${2-"no"};
 
 if [ -z "$3" ]; then
-    cat $axiom_file | tptp_to_ladr | mace4 -p 1 -S 1 -m "$timeout";
+    cat $axiom_file | tptp_to_ladr | mace4 -p 1 -S 1 -n 1 -m 1 -s "$timeout";
 # print Skolems last                            ^^^^
     exit $?;
 else
