@@ -14,7 +14,8 @@ if [ -z $theory ]; then
 fi
 
 function prover9_labels_and_answers() {
-    grep --only-matching 'label([^(]*)' $1 \
+    tptp4X -N -V -c -x -umachine $1 \
+	| grep --only-matching 'label([^(]*)' \
 	| sed -e 's/label(\(.*\))/\1/' \
 	| sort -u \
 	| uniq \
