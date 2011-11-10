@@ -110,6 +110,21 @@ function ensure_sensible_tptp_theory() {
 	exit 1;
     fi
 
+    # Make sure that no formula is called 'conjecture' or 'axiom'
+    tptp4X -x -N -V -umachine $1 | grep --silent '^fof(conjecture,';
+
+    if [ $? -ne "0" ]; then
+	error "There is a formula in the given TPTP theory called 'conjecture'.  Please rename it.";
+	exit 1;
+    fi
+
+    tptp4X -x -N -V -umachine $1 | grep --silent '^fof(axiom,';
+
+    if [ $? -ne "0" ]; then
+	error "There is a formula in the given TPTP theory called 'axiom'.  Please rename it.";
+	exit 1;
+    fi
+
     local conjecture=`tptp4X -x -N -V -umachine $1 | grep --count ',conjecture,'`;
     if [ "$conjecture" -eq "0" ]; then
 	error "The TPTP theory at '$1' contains no conjecture formula.";
