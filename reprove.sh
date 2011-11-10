@@ -241,21 +241,41 @@ function keep_proving() {
 
 if [ ! -n "$1" ]
 then
-  echo "Usage: `basename $0` THEORY-FILE WORK-DIRECTORY"
-  exit 1;
-fi
-
-if [ ! -n "$2" ]
-then
-  echo "Usage: `basename $0` THEORY-FILE WORK-DIRECTORY"
+  echo "Usage: `basename $0` THEORY-FILE [WORK-DIRECTORY]"
   exit 1;
 fi
 
 theory=$1;
-work_directory=$2;
+
+theory_basename=`basename $theory`;
+theory_basename_sans_extension=`echo "$theory_basename" | sed -e 's/\(.*\)\.[^.]*$/\1/'`;
+
+# DEBUG
+echo "basename w/o extension: $theory_basename_sans_extension";
+
+theory_dirname=`dirname $theory`;
+
+if [ -z "$2" ]; then
+    try=1;
+    candidate_work_directory="${theory_dirname}/${theory_basename_sans_extension}-${try}";
+    while [ -e "$candidate_work_directory" -o -d "$candidate_work_directory" ]; do
+	try=$try + 1;
+	candidate_work_directory="${theory_dirname}/${theory_basename_sans_extension}-${try}";
+    done
+    work_directory="$candidate_work_directory";
+    # DEBUG
+    echo "We computed the work_directory as $work_directory";
+else
+    work_directory=$2;
+fi
 
 ensure_file_exists_and_is_readable $theory;
 ensure_sensible_tptp_theory $theory;
+
+if [ -z "$work_directory" ]; then
+    error "We have failed to compute a sensible work directory.";
+    exit 1;
+fi
 
 if [ -f $work_directory ]; then
     error "We would have placed our results into the directory";
@@ -276,8 +296,6 @@ if [ -d $work_directory ]; then
     echo "by that name.  Please move the directory out of the way.";
     exit 1;
 fi
-
-theory_basename=`basename $theory`;
 
 mkdir -p $work_directory;
 cp $theory $work_directory;
