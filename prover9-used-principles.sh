@@ -15,10 +15,11 @@ fi
 
 function prover9_labels_and_answers() {
     grep --only-matching 'label([^(]*)' $1 \
-	| sed -e 's/label(\(.*\))/\1/' \
-	| sort -u \
-	| uniq \
-	| grep --invert-match 'axiom';
+        | sed -e 's/label(\(.*\))/\1/' \
+        | sed -e 's/_AndLHS//' -e 's/_AndRHS//' \
+        | sort -u \
+        | uniq \
+        | grep --invert-match 'axiom';
 #                              ^^^^^ prover9 uses this internally as a label; it does not come from our problem
 }
 
