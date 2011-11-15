@@ -450,6 +450,114 @@ else
     echo -e "${RED}unknown${NC}";
 fi
 
+function confirm_provability() {
+    if [ -z $1 ]; then
+        error "Usage: confirm_provability PROVER ANOTHER-PROVER WORK-DIRECTORY";
+        return 1;
+    fi
+
+    if [ -z $2 ]; then
+        error "Usage: confirm_provability PROVER ANOTHER-PROVER WORK-DIRECTORY";
+        return 1;
+    fi
+
+    if [ -z $3 ]; then
+        error "Usage: confirm_provability PROVER ANOTHER-PROVER WORK-DIRECTORY";
+        return 1;
+    fi
+
+    local prover=$1;
+    local another_prover=$2;
+    local work_directory=$3;
+
+    local dir_for_prover="$work_directory/$prover";
+
+    if [ ! -d $dir_for_prover ]; then
+        error "The directory '$dir_for_prover' for $prover does not exist.";
+        return 1;
+    fi
+
+    local num_trimmed_theories=`find $dir_for_prover -maxdepth 1 -type f -name "*.trimmed" | wc -l`;
+
+    if [ $num_trimmed_theories -eq "0" ]; then
+        echo "The initial theory ($theory_basename) is already minimized with resect to $prover;";
+        echo "confirming its minimality using $another_prover would be redundant.";
+    else
+        local num_trimmed_theories=`find $dir_for_prover -maxdepth 1 -type f -name "*.trimmed" | wc -l`;
+        local last_trimmed_theory=`find $dir_for_prover -maxdepth 1 -type f -name "*.${num_trimmed_theories}.trimmed"`;
+
+        if [ -z $last_trimmed_theory ]; then
+            error "Something went wrong finding the last trimmed theory under $dir_for_prover";
+            return 1;
+        fi
+
+        local final_used_principles=`find $dir_for_prover -maxdepth 1 -type f -name "*.${num_trimmed_theories}.proof.used-principles"`;
+
+        if [ -z $final_used_principles ]; then
+            error "We did not find the final used-principles file in the expected location ($final_used_principles)";
+            return 1;
+        fi
+
+        if [ ! -e $final_used_principles ]; then
+            error "We did not find the final used-principles file in the expected location ($final_used_principles)";
+            return 1;
+        fi
+
+        local num_used_principles=`cat $final_used_principles | wc -l`;
+
+        # Now prepare the other prover
+
+        local other_prover_script=`script_for_prover $another_prover`;
+        local other_prover_used_principles_script=`used_principles_script_for_prover $another_prover`;
+        local other_prover_unused_principles_script=`unused_principles_script_for_prover $another_prover`;
+
+        if [ -z $other_prover_script ]; then
+            error "The run-prover script for $another_prover could not be found.";
+            return 1;
+        fi
+
+        if [ -z $other_prover_used_principles_script ]; then
+            error "The used-principles script for $another_prover could not be found.";
+            return 1;
+        fi
+
+        if [ -z $other_prover_unused_principles_script ]; then
+            error "The unused-principles script for $another_prover could not be found.";
+            return 1;
+        fi
+
+        local other_prover_proof="$dir_for_prover/$theory_basename.${num_trimmed_theories}.${another_prover}.proof";
+        local other_prover_errors="$dir_for_prover/$theory_basename.${num_trimmed_theories}.${another_prover}.errors";
+
+        $other_prover_script $last_trimmed_theory > $other_prover_proof 2> $other_prover_errors;
+
+        if [ $? -eq "0" ]; then
+            echo -e -n "${GREEN}confirmed${NC}";
+            local other_prover_used_principles="$dir_for_prover/$theory_basename.${num_trimmed_theories}.${another_prover}.used-principles";
+            local other_prover_unused_principles="$dir_for_prover/$theory_basename.${num_trimmed_theories}.${another_prover}.unused-principles";
+            $other_prover_used_principles_script $other_prover_proof $last_trimmed_theory > $other_prover_used_principles;
+            $other_prover_unused_principles_script $other_prover_proof $last_trimmed_theory > $other_prover_unused_principles;
+
+            # Now compare the number of used principles
+            local num_other_prover_used_principles=`cat $other_prover_used_principles | wc -l`;
+            if [ $num_used_principles -eq $num_other_prover_used_principles ]; then
+                echo " (all principles used by ${prover}'s final proof were used)";
+            else
+                # cool: $other_prover has found a proof using fewer principles
+                local count_diff=`expr $num_used_principles - $num_other_prover_used_principles`;
+                echo -e " (${BLUE}$count_diff${NC} fewer principle(s) were used!)";
+            fi
+
+        else
+            echo -e "${RED}unconfirmed${NC} (there was an error running $another_prover)";
+        fi
+
+    fi
+
+    return 0;
+
+}
+
 echo "================================================================================";
 
 for prover in $provers; do
@@ -457,6 +565,19 @@ for prover in $provers; do
     used_principles_script=`used_principles_script_for_prover $prover`;
     unused_principles_script=`unused_principles_script_for_prover $prover`;
     keep_proving $run_prover_script $used_principles_script $unused_principles_script $prover;
+    if [ $? -eq "0" ]; then
+        echo;
+        echo " Confirming provability using other provers:";
+        dir_for_prover="$work_directory/$prover";
+        for other_prover in $provers; do
+            if [ "$other_prover" != "$prover" ]; then
+                echo -e -n "* ${CYAN}$other_prover${NC}..."
+                confirm_provability $prover $other_prover $work_directory;
+            fi
+        done
+    else
+        echo "Something went wrong reproving with $prover; not confirming derivability using the other provers.";
+    fi
 done
 
 echo "================================================================================";
