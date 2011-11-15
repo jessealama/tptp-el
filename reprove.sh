@@ -491,7 +491,7 @@ function confirm_provability() {
         echo "The initial theory ($theory_basename) is already minimized with resect to $prover;";
         echo "confirming its minimality using $another_prover would be redundant.";
     else
-        local num_trimmed_theories=`find $dir_for_prover -maxdepth 1 -type f -name "*.trimmed" | wc -l`;
+        local num_trimmed_theories=`find $dir_for_prover -maxdepth 1 -type f -name "*.trimmed" | wc -l | sed -e 's/^ *//'`;
         local last_trimmed_theory=`find $dir_for_prover -maxdepth 1 -type f -name "*.${num_trimmed_theories}.trimmed"`;
 
         if [ -z $last_trimmed_theory ]; then
