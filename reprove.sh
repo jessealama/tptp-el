@@ -191,11 +191,16 @@ function run_prover_with_timeout() {
         return 1;
     fi
 
+    if [ -z $4 ]; then
+        error "An error file must be supplied.";
+    fi
+
     local prover_script=$1;
     local theory=$2;
     local proof=$3;
+    local errors=$4;
 
-    $prover_script $theory $prover_timeout > $proof 2> /dev/null;
+    $prover_script $theory $prover_timeout > $proof 2> $errors;
 
     return $?;
 }
@@ -255,11 +260,12 @@ function keep_proving() {
         echo -n "* Proof attempt $proof_attempt..."
 
         proof="$prover_directory/$theory_basename.$proof_attempt.proof";
+        error_log="$prover_directory/$theory_basename.$proof_attempt.proof.errors";
         used_principles="$prover_directory/$theory_basename.$proof_attempt.proof.used-principles";
         unused_principles="$prover_directory/$theory_basename.$proof_attempt.proof.unused-principles";
         trimmed_theory="$prover_directory/$theory_basename.$proof_attempt.trimmed";
 
-        run_prover_with_timeout $prover_script $theory $proof;
+        run_prover_with_timeout $prover_script $theory $proof $error_log;
 
         prover_exit_code="$?";
 
@@ -397,9 +403,10 @@ echo "==========================================================================
 echo -n "Axioms alone..........";
 
 axiom_model_file="$work_directory/$axiom_file.model";
+axiom_model_errors="$work_directory/$axiom_file.model.errors";
 axiom_model_file_basename=`basename $axiom_model_file`;
 
-$mace4_script "$work_directory/$axiom_file" $model_finder_timeout > $axiom_model_file 2> /dev/null;
+$mace4_script "$work_directory/$axiom_file" $model_finder_timeout > $axiom_model_file 2> $axiom_model_errors;
 
 if [ $? -eq "0" ]; then
     echo -e "${GREEN}satisfiable${NC} (saved in $axiom_model_file_basename)";
@@ -412,9 +419,10 @@ fi
 echo -n "Axioms + conjecture...";
 
 whole_problem_model_file="$work_directory/$theory_basename.model";
+whole_problem_model_errors="$work_directory/$theory_basename.model.errors";
 whole_problem_model_file_basename=`basename $whole_problem_model_file`;
 
-$mace4_script "$work_directory/$axiom_file" $model_finder_timeout 1 > $whole_problem_model_file 2> /dev/null;
+$mace4_script "$work_directory/$axiom_file" $model_finder_timeout 1 > $whole_problem_model_file 2> $whole_problem_model_errors;
 # promote conjecture(s) to axioms                                 ^
 
 if [ $? -eq "0" ]; then
