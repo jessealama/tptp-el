@@ -90,6 +90,8 @@ for prover in "$provers"; do
         if [ ! -x "$script" ]; then
             error "The required script '$script' is not executable";
             exit 1;
+provers="vampire eprover prover9";
+
         fi
     done
 done
