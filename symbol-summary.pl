@@ -4,6 +4,8 @@ use strict;
 
 use POSIX qw(floor);
 
+use Term::ANSIColor;
+
 # swiped from the perldocs for log
 sub log10 {
   my $n = shift;
@@ -32,7 +34,8 @@ if (scalar @ARGV > 1) {
 
 my $tptp_file = $ARGV[0];
 
-# Sanity checks: the file exists, is readable, and is a sane TPTP file
+# Sanity checks: the file exists, is readable, we have tptp4X, the input file is a sane TPTP file
+# according to tptp4X, and we have GetSymbols
 
 if (! -e $tptp_file) {
   print "Error: there is no file at '$tptp_file'.";
@@ -44,11 +47,27 @@ if (! -r $tptp_file) {
   exit 1;
 }
 
+my $which_tptp4X = system ('which tptp4X > /dev/null 2>&1');
+my $which_tptp4X_exit_code = $which_tptp4X >> 8;
+
+if ($which_tptp4X_exit_code != 0) {
+  print "Error: we are missing the required tptp4X tool.  Is it in your PATH?\n";
+  exit 1;
+}
+
 my $tptp4X_result = system ("tptp4X -N -V -c -x -umachine $tptp_file > /dev/null 2>&1");
 my $tptp4X_exit_code = $tptp4X_result >> 8;
 
 if ($tptp4X_exit_code != 0) {
   print "Error: the file at '$tptp_file' is not a valid TPTP file.\n";
+  exit 1;
+}
+
+my $which_GetSymbols_result = system ('which GetSymbols > /dev/null 2>&1');
+my $which_GetSymbols_exit_code = $which_GetSymbols_result >> 8;
+
+if ($which_GetSymbols_exit_code != 0) {
+  print "Error: we are missing the required GetSymbols tool.  Is it in your PATH?\n";
   exit 1;
 }
 
@@ -125,7 +144,11 @@ if (scalar @function_symbol_infos > 0) {
       exit 1;
     }
     my $length_of_this_symbol = length $symbol;
-    print $symbol, copy_string (' ', $length_of_longest_symbol_name - $length_of_this_symbol), ' |   ', $arity, '   | ', $num_occurrences, "\n";
+    if ($num_occurrences == 1) {
+      print colored ($symbol, 'red'), copy_string (' ', $length_of_longest_symbol_name - $length_of_this_symbol), ' |   ', $arity, '   | ', $num_occurrences, "\n";
+    } else {
+      print $symbol, copy_string (' ', $length_of_longest_symbol_name - $length_of_this_symbol), ' |   ', $arity, '   | ', $num_occurrences, "\n";
+    }
   }
 }
 
@@ -143,7 +166,11 @@ if (scalar @predicate_symbol_infos > 0) {
       exit 1;
     }
     my $length_of_this_symbol = length $symbol;
-    print $symbol, copy_string (' ', $length_of_longest_symbol_name - $length_of_this_symbol), ' |   ', $arity, '   | ', $num_occurrences, "\n";
+    if ($num_occurrences == 1) {
+      print colored ($symbol, 'red'), copy_string (' ', $length_of_longest_symbol_name - $length_of_this_symbol), ' |   ', $arity, '   | ', $num_occurrences, "\n";
+    } else {
+      print $symbol, copy_string (' ', $length_of_longest_symbol_name - $length_of_this_symbol), ' |   ', $arity, '   | ', $num_occurrences, "\n";
+    }
   }
 }
 
