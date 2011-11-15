@@ -71,7 +71,26 @@ function sentry_script_for_prover() {
     echo "$script_home/$1-sentry.pl";
 }
 
+mace4_script="$script_home/run-mace4.sh";
+
+if [ ! -e "$mace4_script" ]; then
+    error "The required script '$mace4_script' is missing from $mace4_script_home";
+    exit 1;
+fi
+
+if [ ! -r "$mace4_script" ]; then
+    error "The required script '$mace4_script' is not readable";
+    exit 1;
+fi
+
+if [ ! -x "$mace4_script" ]; then
+    error "The required script '$mace4_script' is not executable";
+    exit 1;
+fi
+
 scripts="$eprover_scripts $vampire_scripts $prover9_scripts $tptp_scripts";
+
+provers="vampire eprover prover9";
 
 for prover in "$provers"; do
     run_prover_script=`script_for_prover $prover`;
@@ -90,8 +109,6 @@ for prover in "$provers"; do
         if [ ! -x "$script" ]; then
             error "The required script '$script' is not executable";
             exit 1;
-provers="vampire eprover prover9";
-
         fi
     done
 done
