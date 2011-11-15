@@ -589,7 +589,8 @@ for prover in $provers; do
             fi
         done
     else
-        echo "Something went wrong reproving with $prover; not confirming derivability using the other provers.";
+        echo;
+        echo "Something failed with $prover; not confirming derivability using the other provers.";
     fi
 done
 
