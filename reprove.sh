@@ -20,6 +20,9 @@ magenta='\033[35;47m'
 cyan='\033[36;47m'
 CYAN='\033[1;36m'
 white='\033[37;47m'
+WHITE='\033[1;37m'
+purple='\033[0;35m'
+PURPLE='\033[1;35m'
 NC='\033[0m'
 
 function error() {
@@ -35,7 +38,7 @@ function error() {
 
 vampire_programs="vampire";
 eprover_programs="eprover epclextract";
-prover9_programs="tptp_to_ladr prover9 prooftrans"
+prover9_programs="tptp_to_ladr prover9 prooftrans mace4"
 tptp_programs="tptp4X tptp2X";
 
 needed_programs="$vampire_programs $eprover_programs $prover9_programs $tptp_programs";
@@ -113,6 +116,21 @@ function ensure_sensible_tptp_theory() {
         exit 1;
     fi
 
+    # Make sure that no formula is called 'conjecture' or 'axiom'
+    tptp4X -x -N -V -umachine $1 | grep --silent '^fof(conjecture,';
+
+    if [ $? -eq "0" ]; then
+        error "There is a formula in the given TPTP theory called 'conjecture'.  Please rename it.";
+        exit 1;
+    fi
+
+    tptp4X -x -N -V -umachine $1 | grep --silent '^fof(axiom,';
+
+    if [ $? -eq "0" ]; then
+        error "There is a formula in the given TPTP theory called 'axiom'.  Please rename it.";
+        exit 1;
+    fi
+
     local conjecture=`tptp4X -x -N -V -umachine $1 | grep --count ',conjecture,'`;
     if [ "$conjecture" -eq "0" ]; then
         error "The TPTP theory at '$1' contains no conjecture formula.";
@@ -130,6 +148,7 @@ function ensure_sensible_tptp_theory() {
 
 # The timeout used to stop a prover.
 prover_timeout="30"; # seconds
+model_finder_timeout="5"; # seconds
 
 function ensure_file_exists_and_is_readable() {
 
@@ -360,11 +379,7 @@ indent=`expr $offset / 2`;
 for ((i=1; i <= $indent; i++)); do
     echo -n " ";
 done
-echo "$theory_basename";
-echo "================================================================================";
-
-tptp4X -N -V -c -x -uhuman $theory | tee "$work_directory/$theory_basename";
-
+echo -e "${PURPLE}$theory_basename${NC}";
 echo "================================================================================";
 
 # Save the axioms (non-conjecture formulas) of the theory in a
@@ -373,12 +388,46 @@ tptp4X -N -V -c -x -umachine $theory \
     | grep --invert-match ',conjecture,' \
     | tptp4X -uhuman -- > "$work_directory/$axiom_file";
 
-for prover in "$provers"; do
-    run_prover_script=script_for_prover $prover;
-    used_principles_script=used_principles_script_for_prover $prover;
-    unused_principles_script=unused_principles_script_for_prover $prover;
-    keep_proving $prover_script $used_principles_script $unused_principles_script "$prover";
-done
+echo "                              Consistency Check";
+
+echo "================================================================================";
+
+# Consistency checking, 1: the axioms are consistent
+
+echo -n "Axioms alone..........";
+
+axiom_model_file="$work_directory/$axiom_file.model";
+axiom_model_file_basename=`basename $axiom_model_file`;
+
+$mace4_script "$work_directory/$axiom_file" $model_finder_timeout > $axiom_model_file 2> /dev/null;
+
+if [ $? -eq "0" ]; then
+    echo -e "${GREEN}satisfiable${NC} (saved in $axiom_model_file_basename)";
+else
+    echo -e "${RED}unknown${NC}"
+fi
+
+# Consistency checking, 2: the axioms + the conjecture are consistent
+
+echo -n "Axioms + conjecture...";
+
+whole_problem_model_file="$work_directory/$theory_basename.model";
+whole_problem_model_file_basename=`basename $whole_problem_model_file`;
+
+$mace4_script "$work_directory/$axiom_file" $model_finder_timeout 1 > $whole_problem_model_file 2> /dev/null;
+# promote conjecture(s) to axioms                    ^
+
+if [ $? -eq "0" ]; then
+    echo -e "${GREEN}satisfiable${NC} (saved in $whole_problem_model_file_basename)";
+else
+    echo -e "${RED}unknown${NC}";
+fi
+
+echo "================================================================================";
+
+keep_proving $run_eprover_script $eprover_used_principles_script $eprover_unused_principles_script "eprover";
+keep_proving $run_vampire_script $vampire_used_principles_script $vampire_unused_principles_script "vampire";
+keep_proving $run_prover9_script $prover9_used_principles_script $prover9_unused_principles_script "prover9";
 
 echo "================================================================================";
 echo "Done.  Our work has been saved in the directory $work_directory.";
