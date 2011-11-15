@@ -407,6 +407,9 @@ done
 echo -e "${PURPLE}$theory_basename${NC}";
 echo "================================================================================";
 
+# Save the whole theory
+tptp4X -N -V -c -x -umachine $theory > "$work_directory/$theory_basename";
+
 # Save the axioms (non-conjecture formulas) of the theory in a
 # separate file
 tptp4X -N -V -c -x -umachine $theory \
