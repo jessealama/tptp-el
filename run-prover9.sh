@@ -1,7 +1,7 @@
 #!/bin/bash -
 
 theory=$1;
-timeout=$2;
+timeout=${2-"30"};
 
 ulimit -t $timeout \
     || (echo "Error: '$timeout' is not an acceptable argument to ulimit -t." && exit 1);
