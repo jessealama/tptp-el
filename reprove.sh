@@ -417,7 +417,7 @@ $mace4_script $axiom_file $timeout 1 > $whole_problem_model_file 2> /dev/null;
 if [ $? -eq "0" ]; then
     echo -e "${GREEN}satisfiable${NC} (saved in $whole_problem_model_file_basename)";
 else
-    echo "${RED}unknown${NC}";
+    echo -e "${RED}unknown${NC}";
 fi
 
 echo "================================================================================";
