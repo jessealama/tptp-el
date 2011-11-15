@@ -24,7 +24,10 @@ fi
 
 timeout=${2-"30"};
 
-promote_conjectures=${2-"no"};
+ulimit -t $timeout \
+    || (echo "Error: '$timeout' is not an acceptable argument to ulimit -t." && exit 1);
+
+promote_conjectures=${3-"no"};
 
 if [ -z "$3" ]; then
     cat $axiom_file | tptp_to_ladr | mace4 -p 1 -S 1 -m 1 -s "$timeout";
