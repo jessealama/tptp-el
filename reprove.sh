@@ -55,6 +55,11 @@ script_home=`dirname $0`; # blah
 
 provers="vampire eprover prover9";
 
+num_provers=0;
+for prover in $provers; do
+    num_provers=`expr $num_provers + 1`;
+done
+
 function script_for_prover() {
     echo "$script_home/run-$1.sh";
 }
@@ -407,6 +412,9 @@ done
 echo -e "${PURPLE}$theory_basename${NC}";
 echo "================================================================================";
 
+# Save the whole theory
+tptp4X -N -V -c -x -umachine $theory > "$work_directory/$theory_basename";
+
 # Save the axioms (non-conjecture formulas) of the theory in a
 # separate file
 tptp4X -N -V -c -x -umachine $theory \
@@ -541,7 +549,7 @@ function confirm_provability() {
             # Now compare the number of used principles
             local num_other_prover_used_principles=`cat $other_prover_used_principles | wc -l`;
             if [ $num_used_principles -eq $num_other_prover_used_principles ]; then
-                echo " (all principles used by ${prover}'s final proof were used)";
+                echo " (& all principles used by ${prover}'s final proof were used)";
             else
                 # cool: $other_prover has found a proof using fewer principles
                 local count_diff=`expr $num_used_principles - $num_other_prover_used_principles`;
@@ -560,12 +568,17 @@ function confirm_provability() {
 
 echo "================================================================================";
 
+num_successes=0;
+at_least_one_countersatisfiable=0;
+at_least_one_unsuccessful=0;
+
 for prover in $provers; do
     run_prover_script=`script_for_prover $prover`;
     used_principles_script=`used_principles_script_for_prover $prover`;
     unused_principles_script=`unused_principles_script_for_prover $prover`;
     keep_proving $run_prover_script $used_principles_script $unused_principles_script $prover;
     if [ $? -eq "0" ]; then
+        num_successes=`expr $num_successes + 1`;
         echo;
         echo " Confirming provability using other provers:";
         dir_for_prover="$work_directory/$prover";
@@ -576,9 +589,16 @@ for prover in $provers; do
             fi
         done
     else
-        echo "Something went wrong reproving with $prover; not confirming derivability using the other provers.";
+        echo;
+        echo "Something failed with $prover; not confirming derivability using the other provers.";
     fi
 done
 
 echo "================================================================================";
 echo "Done.  Our work has been saved in the directory $work_directory.";
+
+if [ $num_successes -eq $num_provers ]; then
+    exit 0;
+else
+    exit 1;
+fi
