@@ -396,7 +396,7 @@ echo -n "Axioms alone..........";
 axiom_model_file="$work_directory/$axiom_file.model";
 axiom_model_file_basename=`basename $axiom_model_file`;
 
-$mace4_script $axiom_file $timeout > $axiom_model_file 2> /dev/null;
+$mace4_script "$work_directory/$axiom_file" $timeout > $axiom_model_file 2> /dev/null;
 
 if [ $? -eq "0" ]; then
     echo -e "${GREEN}satisfiable${NC} (saved in $axiom_model_file_basename)";
@@ -411,8 +411,8 @@ echo -n "Axioms + conjecture...";
 whole_problem_model_file="$work_directory/$theory_basename.model";
 whole_problem_model_file_basename=`basename $whole_problem_model_file`;
 
-$mace4_script $axiom_file $timeout 1 > $whole_problem_model_file 2> /dev/null;
-# promote conjecture(s) to axioms  ^
+$mace4_script "$work_directory/$axiom_file" $timeout 1 > $whole_problem_model_file 2> /dev/null;
+# promote conjecture(s) to axioms                    ^
 
 if [ $? -eq "0" ]; then
     echo -e "${GREEN}satisfiable${NC} (saved in $whole_problem_model_file_basename)";
