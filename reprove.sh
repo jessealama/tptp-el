@@ -43,58 +43,62 @@ needed_programs="$vampire_programs $eprover_programs $prover9_programs $tptp_pro
 for program in $needed_programs; do
     which $program > /dev/null;
     if [ $? -ne "0" ]; then
-	error "The required program '$program' could not be found in your path.";
-	exit 1;
+        error "The required program '$program' could not be found in your path.";
+        exit 1;
     fi
 done
 
 script_home=`dirname $0`; # blah
 
-run_eprover_script="$script_home/run-eprover.sh";
-eprover_used_principles_script="$script_home/eprover-used-principles.sh";
-eprover_unused_principles_script="$script_home/eprover-unused-principles.sh";
-eprover_sentry_script="$script_home/eprover-sentry.pl";
-eprover_scripts="$run_eprover_script $eprover_used_principles_script $eprover_unused_principles_script $eprover_sentry_script"
+provers="vampire eprover prover9";
 
-run_vampire_script="$script_home/run-vampire.sh";
-vampire_used_principles_script="$script_home/vampire-used-principles.sh";
-vampire_unused_principles_script="$script_home/vampire-unused-principles.sh";
-vampire_sentry_script="$script_home/vampire-sentry.pl";
-vampire_scripts="$run_vampire_script $vampire_used_principles_script $vampire_unused_principles_script $vampire_sentry_script"
+function script_for_prover() {
+    echo "$script_home/run-$1.sh";
+}
 
-run_prover9_script="$script_home/run-prover9.sh";
-prover9_used_principles_script="$script_home/prover9-used-principles.sh";
-prover9_unused_principles_script="$script_home/prover9-unused-principles.sh";
-prover9_sentry_script="$script_home/prover9-sentry.pl";
-prover9_scripts="$run_prover9_script $prover9_used_principles_script $prover9_unused_principles_script $prover9_sentry_script"
+function used_principles_script_for_prover() {
+    echo "$script_home/$1-used-principles.sh";
+}
 
-tptp_scripts="$script_home/tptp-labels.sh";
+function unused_principles_script_for_prover() {
+    echo "$script_home/$1-unused-principles.sh";
+}
+
+function sentry_script_for_prover() {
+    echo "$script_home/$1-sentry.pl";
+}
 
 scripts="$eprover_scripts $vampire_scripts $prover9_scripts $tptp_scripts";
 
-for script in $scripts; do
-    if [ ! -e $script ]; then
-	error "The required script '$script' is missing from $script_home";
-	exit 1;
-    fi
-    if [ ! -r $script ]; then
-	error "The required script '$script' is not readable";
-	exit 1;
-    fi
-    if [ ! -x $script ]; then
-	error "The required script '$script' is not executable";
-	exit 1;
-    fi
+for prover in "$provers"; do
+    run_prover_script=`script_for_prover $prover`;
+    used_principles_script=`used_principles_script_for_prover $prover`;
+    unused_principles_script=`unused_principles_script_for_prover $prover`;
+    sentry_script=`sentry_script_for_prover $prover`;
+    for script in $run_prover_script $used_principles_script $unused_principles_script $sentry_script; do
+        if [ ! -e "$script" ]; then
+            error "The required script '$script' is missing from $script_home";
+            exit 1;
+        fi
+        if [ ! -r "$script" ]; then
+            error "The required script '$script' is not readable";
+            exit 1;
+        fi
+        if [ ! -x "$script" ]; then
+            error "The required script '$script' is not executable";
+            exit 1;
+        fi
+    done
 done
 
 function ensure_sensible_tptp_theory() {
     tptp4X -c -x -N -V $1 > /dev/null 2>&1;
     if [ $? -ne "0" ]; then
-	local error_message=`tptp4X -c -x -N -V $1`;
-	error "The TPTP theory at '$1' fails to be a valid TPTP file.";
-	echo "The error message from the tptp4X tool is:";
-	echo "$error_message";
-	exit 1;
+        local error_message=`tptp4X -c -x -N -V $1`;
+        error "The TPTP theory at '$1' fails to be a valid TPTP file.";
+        echo "The error message from the tptp4X tool is:";
+        echo "$error_message";
+        exit 1;
     fi
 
     # tptp4x, when called with -x, will print "ERROR: cannot open ..."
@@ -103,19 +107,19 @@ function ensure_sensible_tptp_theory() {
     local unable_to_open=`tptp4X -x -N -V $1 | grep 'ERROR: Cannot open'`;
 
     if [ ! -z "$unable_to_open" ]; then
-	error "The TPTP theory at '$1' has include directives that cannot be processed.";
-	echo "Here is the error message from TPTP4X:";
-	echo "$unable_to_open";
-	exit 1;
+        error "The TPTP theory at '$1' has include directives that cannot be processed.";
+        echo "Here is the error message from TPTP4X:";
+        echo "$unable_to_open";
+        exit 1;
     fi
 
     local conjecture=`tptp4X -x -N -V -umachine $1 | grep --count ',conjecture,'`;
     if [ "$conjecture" -eq "0" ]; then
-	error "The TPTP theory at '$1' contains no conjecture formula.";
-	exit 1;
+        error "The TPTP theory at '$1' contains no conjecture formula.";
+        exit 1;
     elif [ "$conjecture" -gt "1" ]; then
-	error "The TPTP theory at '$1' has more than one conjecture formula.";
-	exit 1;
+        error "The TPTP theory at '$1' has more than one conjecture formula.";
+        exit 1;
     fi
     return 0;
 }
@@ -130,23 +134,23 @@ prover_timeout="30"; # seconds
 function ensure_file_exists_and_is_readable() {
 
     if [ -z "$1" ]; then
-	error "We need an argument to determine whether a file exists and is readable.";
-	exit 1;
+        error "We need an argument to determine whether a file exists and is readable.";
+        exit 1;
     fi
 
     if [ -d "$1" ]; then
-	error "The supplied theory '$1' is already the name of a directory.";
-	exit 1;
+        error "The supplied theory '$1' is already the name of a directory.";
+        exit 1;
     fi
 
     if [ ! -e "$1" ]; then
-	error "The supplied theory '$1' doesn't exist.";
-	exit 1;
+        error "The supplied theory '$1' doesn't exist.";
+        exit 1;
     fi
 
     if [ ! -r "$1" ]; then
-	error "The supplied theory '$1' is not readable.";
-	exit 1;
+        error "The supplied theory '$1' is not readable.";
+        exit 1;
     fi
 
 }
@@ -154,18 +158,18 @@ function ensure_file_exists_and_is_readable() {
 function run_prover_with_timeout() {
 
     if [ -z $1 ]; then
-	error "A proof script is needed, but none was supplied.";
-	return 1;
+        error "A proof script is needed, but none was supplied.";
+        return 1;
     fi
 
     if [ -z $2 ]; then
-	error "A theory file is needed, but none was supplied.";
-	return 1;
+        error "A theory file is needed, but none was supplied.";
+        return 1;
     fi
 
     if [ -z $3 ]; then
-	error "A target proof file must be supplied.";
-	return 1;
+        error "A target proof file must be supplied.";
+        return 1;
     fi
 
     local prover_script=$1;
@@ -209,7 +213,7 @@ function keep_proving() {
     local indent=`expr $offset / 2`;
     # um
     for ((i=1; i <= $indent; i++)); do
-	echo -n " ";
+        echo -n " ";
     done
     echo -e "${CYAN}$prover_name${NC}";
     echo "--------------------------------------------------------------------------------";
@@ -229,59 +233,59 @@ function keep_proving() {
 
     while [ $proof_attempt = "1" -o -s $unused_principles ]; do
 
-	echo -n "* Proof attempt $proof_attempt..."
+        echo -n "* Proof attempt $proof_attempt..."
 
-	proof="$prover_directory/$theory_basename.$proof_attempt.proof";
-	used_principles="$prover_directory/$theory_basename.$proof_attempt.proof.used-principles";
-	unused_principles="$prover_directory/$theory_basename.$proof_attempt.proof.unused-principles";
-	trimmed_theory="$prover_directory/$theory_basename.$proof_attempt.trimmed";
+        proof="$prover_directory/$theory_basename.$proof_attempt.proof";
+        used_principles="$prover_directory/$theory_basename.$proof_attempt.proof.used-principles";
+        unused_principles="$prover_directory/$theory_basename.$proof_attempt.proof.unused-principles";
+        trimmed_theory="$prover_directory/$theory_basename.$proof_attempt.trimmed";
 
-	run_prover_with_timeout $prover_script $theory $proof;
+        run_prover_with_timeout $prover_script $theory $proof;
 
-	prover_exit_code="$?";
+        prover_exit_code="$?";
 
         # if this didn't work, then don't go any further
-	if [ $prover_exit_code -eq "0" ]; then
-	    # was any proof emitted?
-	    if [ ! -s $proof ]; then
-		echo -e "${RED}fail${NC}";
-		return 1;
-	    fi
-	else
-	    if [ $prover_exit_code -eq "2" ]; then
-		echo -e "${RED}countersatisfiable${NC}";
-		return 1;
-	    elif [ $prover_exit_code -eq "3" ]; then
-		echo -e "${RED}timeout${NC}";
-		return 1;
-	    else
-		echo -e "${RED}fail${NC}";
-		return 1;
-	    fi
-	fi
+        if [ $prover_exit_code -eq "0" ]; then
+            # was any proof emitted?
+            if [ ! -s $proof ]; then
+                echo -e "${RED}fail${NC}";
+                return 1;
+            fi
+        else
+            if [ $prover_exit_code -eq "2" ]; then
+                echo -e "${RED}countersatisfiable${NC}";
+                return 1;
+            elif [ $prover_exit_code -eq "3" ]; then
+                echo -e "${RED}timeout${NC}";
+                return 1;
+            else
+                echo -e "${RED}fail${NC}";
+                return 1;
+            fi
+        fi
 
-	$used_principles_script $proof $theory > $used_principles;
-	$unused_principles_script $proof $theory > $unused_principles;
+        $used_principles_script $proof $theory > $used_principles;
+        $unused_principles_script $proof $theory > $unused_principles;
 
-	num_used_principles=`cat $used_principles | wc -l | sed -e 's/^ *//'`;
-	num_unused_principles=`cat $unused_principles | wc -l | sed -e 's/^ *//'`;
+        num_used_principles=`cat $used_principles | wc -l | sed -e 's/^ *//'`;
+        num_unused_principles=`cat $unused_principles | wc -l | sed -e 's/^ *//'`;
 
-	if [ -s $used_principles ]; then
-	    echo -e "${GREEN}proof found${NC} [${BLUE}$num_used_principles${NC}/${GRAY}$num_unused_principles${NC} principles ${BLUE}used${NC}/${GRAY}unused${NC}]";
-	else
-	    echo -e "${GREEN}proof found${NC} [${RED}$num_used_principles${NC}/${GRAY}$num_unused_principles${NC} principles ${RED}used${NC}/${GRAY}unused${NC}]";
-	fi
+        if [ -s $used_principles ]; then
+            echo -e "${GREEN}proof found${NC} [${BLUE}$num_used_principles${NC}/${GRAY}$num_unused_principles${NC} principles ${BLUE}used${NC}/${GRAY}unused${NC}]";
+        else
+            echo -e "${GREEN}proof found${NC} [${RED}$num_used_principles${NC}/${GRAY}$num_unused_principles${NC} principles ${RED}used${NC}/${GRAY}unused${NC}]";
+        fi
 
-	echo "$conjecture_formula" > $trimmed_theory;
-	for principle in `cat $used_principles`; do
-	    tptp4X -V -N -umachine -c -x $theory | grep "fof($principle," >> $trimmed_theory;
-	done
+        echo "$conjecture_formula" > $trimmed_theory;
+        for principle in `cat $used_principles`; do
+            tptp4X -V -N -umachine -c -x $theory | grep "fof($principle," >> $trimmed_theory;
+        done
 
         ## Sanity check: the theory that we just emitted is a sensible TPTP theory
-	ensure_sensible_tptp_theory $trimmed_theory;
+        ensure_sensible_tptp_theory $trimmed_theory;
 
-	theory=$trimmed_theory;
-	proof_attempt=`expr $proof_attempt + 1`;
+        theory=$trimmed_theory;
+        proof_attempt=`expr $proof_attempt + 1`;
 
     done
 
@@ -310,8 +314,8 @@ if [ -z "$2" ]; then
     try=1;
     candidate_work_directory="${theory_dirname}/${theory_basename_sans_extension}-${try}";
     while [ -e "$candidate_work_directory" -o -d "$candidate_work_directory" ]; do
-	try=$try + 1;
-	candidate_work_directory="${theory_dirname}/${theory_basename_sans_extension}-${try}";
+        try=`expr $try + 1`;
+        candidate_work_directory="${theory_dirname}/${theory_basename_sans_extension}-${try}";
     done
     work_directory="$candidate_work_directory";
 else
@@ -369,9 +373,12 @@ tptp4X -N -V -c -x -umachine $theory \
     | grep --invert-match ',conjecture,' \
     | tptp4X -uhuman -- > "$work_directory/$axiom_file";
 
-keep_proving $run_eprover_script $eprover_used_principles_script $eprover_unused_principles_script "eprover";
-keep_proving $run_vampire_script $vampire_used_principles_script $vampire_unused_principles_script "vampire";
-keep_proving $run_prover9_script $prover9_used_principles_script $prover9_unused_principles_script "prover9";
+for prover in "$provers"; do
+    run_prover_script=script_for_prover $prover;
+    used_principles_script=used_principles_script_for_prover $prover;
+    unused_principles_script=unused_principles_script_for_prover $prover;
+    keep_proving $prover_script $used_principles_script $unused_principles_script "$prover";
+done
 
 echo "================================================================================";
 echo "Done.  Our work has been saved in the directory $work_directory.";
