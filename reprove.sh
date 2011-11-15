@@ -544,7 +544,7 @@ function confirm_provability() {
             # Now compare the number of used principles
             local num_other_prover_used_principles=`cat $other_prover_used_principles | wc -l`;
             if [ $num_used_principles -eq $num_other_prover_used_principles ]; then
-                echo " (all principles used by ${prover}'s final proof were used)";
+                echo " (& all principles used by ${prover}'s final proof were used)";
             else
                 # cool: $other_prover has found a proof using fewer principles
                 local count_diff=`expr $num_used_principles - $num_other_prover_used_principles`;
