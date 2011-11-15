@@ -4,6 +4,8 @@ use strict;
 
 use POSIX qw(floor);
 
+use Term::ANSIColor;
+
 # swiped from the perldocs for log
 sub log10 {
   my $n = shift;
@@ -34,9 +36,9 @@ sub last_successful_proof_in_dir {
     while (not (defined $last_one) && $i < $num_candidates) {
       my $candidate = $candidates[$i];
       if (-z $candidate) {
-	$i++;
+        $i++;
       } else {
-	$last_one = $candidate;
+        $last_one = $candidate;
       }
     }
     if ($i != 0 and defined $last_one) {
@@ -145,7 +147,7 @@ sub all_used_principles {
     if (defined $last_proof) {
       my @principles = @{principles_of_proof ($last_proof)};
       foreach my $principle (@principles) {
-	$all_used_principles{$principle} = 0;
+        $all_used_principles{$principle} = 0;
       }
     }
   }
@@ -170,18 +172,18 @@ foreach my $principle (@all_principles) {
 
 my $padding = abs (length ('Principle') - $length_of_longest_principle);
 
-print 'Principle', copy_string (' ', $padding + 1),                       '| vampire | eprover | prover9 |', "\n";
+print 'Principle', copy_string (' ', $padding + 1),                       '| ', colored ('vampire', 'cyan'), ' | ', colored ('eprover', 'cyan'), ' | ', colored ('prover9', 'cyan'), ' |', "\n";
 print copy_string ('=', $padding + length ('Principle') + 1),             '|=========|=========|=========|', "\n";
 
 sub summary_line_for_principle {
   my $principle = shift;
   my $padding = shift;
 
-  my $line = "$principle" . copy_string (' ', $padding) . ' |';
+  my $line = colored ($principle, 'blue') . copy_string (' ', $padding) . ' |';
   foreach my $prover (@provers) {
     my $marking;
     if (defined ($principles_for_prover{$prover})) {
-      $marking = defined $principles_for_prover{$prover}->{$principle} ? 'x' : ' ';
+      $marking = defined $principles_for_prover{$prover}->{$principle} ? colored ('x', 'green') : ' ';
     } else {
       $marking = '-';
     }
