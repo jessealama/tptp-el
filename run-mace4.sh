@@ -27,7 +27,7 @@ timeout=${2-"30"};
 promote_conjectures=${2-"no"};
 
 if [ -z "$3" ]; then
-    cat $axiom_file | tptp_to_ladr | mace4 -p 1 -S 1 -N 2 -m 1 -s "$timeout";
+    cat $axiom_file | tptp_to_ladr | mace4 -p 1 -S 1 -m 1 -s "$timeout";
     exit $?;
 else
     cat $axiom_file | sed -e 's/,conjecture,/,axiom,/g' | tptp_to_ladr | mace4 -p 1 -S 1 -m "$timeout";
