@@ -20,6 +20,9 @@ magenta='\033[35;47m'
 cyan='\033[36;47m'
 CYAN='\033[1;36m'
 white='\033[37;47m'
+WHITE='\033[1;37m'
+purple='\033[0;35m'
+PURPLE='\033[1;35m'
 NC='\033[0m'
 
 function error() {
@@ -373,7 +376,7 @@ indent=`expr $offset / 2`;
 for ((i=1; i <= $indent; i++)); do
     echo -n " ";
 done
-echo "$theory_basename";
+echo -e "${PURPLE}$theory_basename${NC}";
 echo "================================================================================";
 
 # Save the axioms (non-conjecture formulas) of the theory in a
