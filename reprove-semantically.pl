@@ -35,8 +35,8 @@ sub extract_formula_from_fof {
     # the next pattern is not robust: it works only for some TPTP fof
     # lines, not all.  It assumes that the fof line has exactly three
     # parts: the formula name, the formula status, and the formula
-    # proper.  But TPTP syntax permits there to be multiple fields
-    # after the formula proper.  Do we need a TPTP parser?  *sigh*
+    # proper.  But TPTP syntax permits multiple fields after the
+    # formula proper.  Do we need a TPTP parser?  *sigh*
     $fof =~ m/fof\([^,]+,[^,]+,(.+)\).$/;
     my $formula = $1;
     # sanity check
