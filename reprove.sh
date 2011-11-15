@@ -376,10 +376,6 @@ done
 echo "$theory_basename";
 echo "================================================================================";
 
-tptp4X -N -V -c -x -uhuman $theory | tee "$work_directory/$theory_basename";
-
-echo "================================================================================";
-
 # Save the axioms (non-conjecture formulas) of the theory in a
 # separate file
 tptp4X -N -V -c -x -umachine $theory \
