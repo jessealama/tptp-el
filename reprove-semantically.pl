@@ -309,7 +309,7 @@ if ($mace4_exit_code == 0) {
       if ($eprover_exit_code == 0) {
         print colored ('confirmed', 'green'), '!', "\n";
       } elsif ($eprover_exit_code == 2) {
-        my $eprover_countersatisfiable = 0;
+        $eprover_countersatisfiable = 0;
         print colored ('countersatisfiable', 'red'), "\n";
       } else {
         print colored ('unknown', 'cyan'), '!', "\n";
