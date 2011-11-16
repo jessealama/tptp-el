@@ -151,6 +151,8 @@ foreach my $premise (@non_conjecture_names) {
 
 my $bigger = max (length ('Premise'), $length_of_longest_premise);
 my $padding = $bigger == length ('Premise') ? 0 : $length_of_longest_premise - length ('Premise');
+
+print copy_string ('=', length ('Premise') + $padding + length (' | ') + length ('Needed according to mace4') + length (' | ') + length ('Needed according to paraox') + 1), "\n";
 print 'Premise', copy_string (' ', $padding), ' | ', 'Needed according to mace4', ' | ', 'Needed according to paradox', "\n";
 print copy_string ('=', length ('Premise') + $padding + length (' | ') + length ('Needed according to mace4') + length (' | ') + length ('Needed according to paraox') + 1), "\n";
 
