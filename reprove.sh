@@ -559,7 +559,7 @@ function confirm_provability() {
             else
                 # cool: $other_prover has found a proof using fewer principles
                 local count_diff=`expr $num_used_principles - $num_other_prover_used_principles`;
-                echo -e " (${BLUE}$count_diff${NC} fewer principle(s) were used by ${another_prover} compared to ${prover}!)";
+                echo -e " & (${BLUE}$count_diff${NC} fewer principle(s) were used by ${another_prover} compared to ${prover}!)";
             fi
 
         else
