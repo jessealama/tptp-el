@@ -73,6 +73,16 @@ my $tptp_theory = $ARGV[0];
 my $tptp_theory_basename = basename ($tptp_theory);
 my $tptp_theory_dirname = dirname ($tptp_theory);
 
+# Strip extension, if present
+
+$tptp_theory_basename =~ m/(.+)\.(.*)$/;
+
+(my $basename_before_final_period, my $extension) = ($1, $2);
+
+if (defined $extension) {
+  $tptp_theory_basename = $basename_before_final_period;
+}
+
 if (! -e $tptp_theory) {
   print 'Error: the supplied file ', $tptp_theory, ' does not exist.', "\n";
   exit 1;
