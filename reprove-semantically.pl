@@ -245,16 +245,22 @@ if (defined $conjecture) {
 close MINIMAL_THEORY
   or die "Can't close '$maybe_minimal_theory'";
 
-print "Now we will test whether the 'semantically minimal' subtheory of the original theory suffices to prove the conjecture.\n";
+# print "Now we will test whether the 'semantically minimal' subtheory of the original theory suffices to prove the conjecture.\n";
 
 # The semantically minimal theory might be countersatisfiable
 
-print 'We will now use a model finder to check whether the theory we just constructed is countersatisfiable.', "\n";
+print '=' x (length ('Premise') + $padding + length (' | ') + length ('Needed according to mace4') + length (' | ') + length ('Needed according to paraox') + 1), "\n";
+print "    Quick Check: Is the 'semantically minimal' theory countersatisfiable?", "\n";
+print '=' x (length ('Premise') + $padding + length (' | ') + length ('Needed according to mace4') + length (' | ') + length ('Needed according to paraox') + 1), "\n";
 
-print '* mace4...';
+# print 'We will now use a model finder to check whether the theory we just constructed is countersatisfiable.', "\n";
 
-my $mace4_countermodel = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.mace4-countermodel.model";
-my $mace4_countermodel_errors = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.mace4-countermodel.errors";
+my $minimal_theory_countersatisfiable = undef;
+
+print '* mace4.....';
+
+my $mace4_countermodel = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.mace4.countermodel";
+my $mace4_countermodel_errors = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.mace4.countermodel.errors";
 
 my $mace4_status = system ("run-mace4.sh $maybe_minimal_theory 5 > $mace4_countermodel 2> $mace4_countermodel_errors");
 my $mace4_exit_code = $mace4_status >> 8;
