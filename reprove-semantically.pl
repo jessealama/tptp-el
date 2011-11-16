@@ -250,7 +250,7 @@ close MINIMAL_THEORY
 # The semantically minimal theory might be countersatisfiable
 
 print '=' x (length ('Premise') + $padding + length (' | ') + length ('Needed according to mace4') + length (' | ') + length ('Needed according to paraox') + 1), "\n";
-print "    Quick Check: Is the 'semantically minimal' theory countersatisfiable?", "\n";
+print " Quick Check: Is the 'semantically minimal' theory countersatisfiable?", "\n";
 print '=' x (length ('Premise') + $padding + length (' | ') + length ('Needed according to mace4') + length (' | ') + length ('Needed according to paraox') + 1), "\n";
 
 # print 'We will now use a model finder to check whether the theory we just constructed is countersatisfiable.', "\n";
