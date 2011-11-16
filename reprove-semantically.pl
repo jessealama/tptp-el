@@ -241,7 +241,7 @@ my $mace4_status = system ("run-mace4.sh $maybe_minimal_theory 5 > $mace4_counte
 my $mace4_exit_code = $mace4_status >> 8;
 
 if ($mace4_exit_code == 0) {
-  print colored ('countersatisfiable', 'red'), '!  (Some further principle is needed; see $mace4_countermodel)', "\n";
+  print colored ('countersatisfiable', 'red'), "!  (Some further principle is needed; see $mace4_countermodel)", "\n";
 } else {
   print colored ('unknown', 'cyan'), '.', "\n";
   print '* paradox...';
@@ -250,7 +250,7 @@ if ($mace4_exit_code == 0) {
   my $paradox_status = system ("run-paradox.sh $maybe_minimal_theory 5 > $paradox_countermodel 2> $paradox_countermodel_errors");
   my $paradox_exit_code = $paradox_status >> 8;
   if ($paradox_exit_code == 2) {
-    print colored ('countersatisfiable', 'red'), '!  (Some further principle is needed; see $paradox_countermodel)', "\n";
+    print colored ('countersatisfiable', 'red'), "!  (Some further principle is needed; see $paradox_countermodel)", "\n";
   } else {
     print colored ('unknown', 'cyan'), '.', "\n";
     print 'Unable to (quickly) detect countersatisfiability of our candidate minimal theory using a model finder; this gives us reason to believe that the conjecture might be a consequence of the semantically minimal theory.  Switching now to theorem provers.', "\n";
@@ -262,7 +262,7 @@ if ($mace4_exit_code == 0) {
     if ($eprover_exit_code == 0) {
       print colored ('conjecture derivable', 'green'), '!', "\n";
     } elsif ($eprover_exit_code == 2) {
-      print colored ('countersatisfiable', 'red'), '!  (Some further principle is needed.  No countermodel was provided directly; see $eprover_proof)', "\n";
+      print colored ('countersatisfiable', 'red'), "!  (Some further principle is needed.  No countermodel was provided directly; see $eprover_proof)", "\n";
     }
 
     # Try vampire
@@ -274,7 +274,7 @@ if ($mace4_exit_code == 0) {
     if ($vampire_exit_code == 0) {
       print colored ('conjecture derivable', 'green'), '!', "\n";
     } elsif ($vampire_exit_code == 2) {
-      print colored ('countersatisfiable', 'red'), '!  (Some further principle is needed.  No countermodel was provided directly; see $vampire_proof)', "\n";
+      print colored ('countersatisfiable', 'red'), "!  (Some further principle is needed.  No countermodel was provided directly; see $vampire_proof)", "\n";
     }
 
     print '* prover9...';
@@ -285,7 +285,7 @@ if ($mace4_exit_code == 0) {
     if ($prover9_exit_code == 0) {
       print colored ('conjecture derivable', 'green'), '!', "\n";
     } elsif ($prover9_exit_code == 2) {
-      print colored ('countersatisfiable', 'red'), '! (Some further principle is needed.  No countermodel was provided directly; see $prover9_proof)', "\n";
+      print colored ('countersatisfiable', 'red'), "! (Some further principle is needed.  No countermodel was provided directly; see $prover9_proof)", "\n";
     } else {
       print colored ('unknown', 'cyan'), '.', "\n";
     }
