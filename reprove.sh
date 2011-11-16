@@ -254,17 +254,23 @@ function keep_proving() {
     local theory=$theory;
 
     # Let's go!
-    echo "--------------------------------------------------------------------------------";
+    echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++";
 
     local prover_name_length=${#prover_name};
     local offset=`expr 80 - $prover_name_length`;
     local indent=`expr $offset / 2`;
+    local indent_plus_prover=`expr $indent + $prover_name_length + 1`;
+    echo -n "+";
     # um
-    for ((i=1; i <= $indent; i++)); do
+    for ((i=1; i < $indent; i++)); do
         echo -n " ";
     done
-    echo -e "${CYAN}$prover_name${NC}";
-    echo "--------------------------------------------------------------------------------";
+    echo -e -n "${CYAN}$prover_name${NC}";
+    for ((i=$indent_plus_prover; i < 80; i++)); do
+        echo -n " ";
+    done
+    echo "+";
+    echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++";
 
     # echo -n "* Trying to find a/an $prover_name-proof for $theory_basename...";
 
@@ -580,7 +586,9 @@ for prover in $provers; do
     if [ $? -eq "0" ]; then
         num_successes=`expr $num_successes + 1`;
         echo;
-        echo " Confirming provability using other provers:";
+        echo '--------------------------------------------------------------------------------';
+        echo '                  Cross-check derivability with other provers';
+        echo '--------------------------------------------------------------------------------';
         dir_for_prover="$work_directory/$prover";
         for other_prover in $provers; do
             if [ "$other_prover" != "$prover" ]; then
@@ -588,6 +596,7 @@ for prover in $provers; do
                 confirm_provability $prover $other_prover $work_directory;
             fi
         done
+        echo '--------------------------------------------------------------------------------';
     else
         echo;
         echo "Something failed with $prover; not confirming derivability using the other provers.";
