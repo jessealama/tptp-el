@@ -266,55 +266,77 @@ my $mace4_status = system ("run-mace4.sh $maybe_minimal_theory 5 > $mace4_counte
 my $mace4_exit_code = $mace4_status >> 8;
 
 if ($mace4_exit_code == 0) {
-  print colored ('countersatisfiable', 'red'), "!  (Some further principle is needed; see $mace4_countermodel)", "\n";
+  print colored ('countersatisfiable', 'red'), "!\n";
+  $minimal_theory_countersatisfiable = 1;
 } else {
-  print colored ('unknown', 'cyan'), '.', "\n";
+  print colored ('unknown', 'cyan'), "\n";
   print '* paradox...';
-  my $paradox_countermodel = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.paradox-countermodel.model";
-  my $paradox_countermodel_errors = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.paradox-countermodel.errors";
+  my $paradox_countermodel = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.paradox.countermodel";
+  my $paradox_countermodel_errors = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.paradox.countermodel.errors";
   my $paradox_status = system ("run-paradox.sh $maybe_minimal_theory 5 > $paradox_countermodel 2> $paradox_countermodel_errors");
   my $paradox_exit_code = $paradox_status >> 8;
   if ($paradox_exit_code == 2) {
-    print colored ('countersatisfiable', 'red'), "!  (Some further principle is needed; see $paradox_countermodel)", "\n";
+    print colored ('countersatisfiable', 'red'), "!\n";
+    $minimal_theory_countersatisfiable = 1;
   } else {
-    print colored ('unknown', 'cyan'), '.', "\n";
-    print 'Unable to (quickly) detect countersatisfiability of our candidate minimal theory using a model finder; this gives us reason to believe that the conjecture might be a consequence of the semantically minimal theory.  Switching now to theorem provers.', "\n";
-    print '* eprover...';
-    my $eprover_proof = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.eprover.proof";
-    my $eprover_proof_errors = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.eprover.proof";
-    my $eprover_status = system ("run-eprover.sh $maybe_minimal_theory > $eprover_proof 2> $eprover_proof_errors");
-    my $eprover_exit_code = $eprover_status >> 8;
-    if ($eprover_exit_code == 0) {
-      print colored ('conjecture derivable', 'green'), '!', "\n";
-    } elsif ($eprover_exit_code == 2) {
-      print colored ('countersatisfiable', 'red'), "!  (Some further principle is needed.  No countermodel was provided directly; see $eprover_proof)", "\n";
-    }
+    print colored ('unknown', 'cyan'), "\n";
 
-    # Try vampire
-    print '* vampire...';
-    my $vampire_proof = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.vampire.proof";
-    my $vampire_proof_errors = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.vampire.proof";
-    my $vampire_status = system ("run-vampire.sh $maybe_minimal_theory > $vampire_proof 2> $vampire_proof_errors");
-    my $vampire_exit_code = $vampire_status >> 8;
-    if ($vampire_exit_code == 0) {
-      print colored ('conjecture derivable', 'green'), '!', "\n";
-    } elsif ($vampire_exit_code == 2) {
-      print colored ('countersatisfiable', 'red'), "!  (Some further principle is needed.  No countermodel was provided directly; see $vampire_proof)", "\n";
-    }
-
-    print '* prover9...';
-    my $prover9_proof = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.prover9.proof";
-    my $prover9_proof_errors = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.prover9.proof";
-    my $prover9_status = system ("run-prover9.sh $maybe_minimal_theory > $prover9_proof 2> $prover9_proof_errors");
-    my $prover9_exit_code = $prover9_status >> 8;
-    if ($prover9_exit_code == 0) {
-      print colored ('conjecture derivable', 'green'), '!', "\n";
-    } elsif ($prover9_exit_code == 2) {
-      print colored ('countersatisfiable', 'red'), "! (Some further principle is needed.  No countermodel was provided directly; see $prover9_proof)", "\n";
+    if (defined $minimal_theory_countersatisfiable) {
+      print "Our 'semantically minimal' theory is countersatisfiable; it does not suffice to prove the conjecture.\n";
+      print "Some further principle is needed.";
+      if ($mace4_exit_code == 0 && $paradox_exit_code == 2) {
+        print "Consult the countermodels at\n\n  $mace4_countermodel\n\nand\n\n  $paradox_countermodel\n\nto see what is missing.\n";
+      } elsif ($mace4_exit_code == 0) {
+        print "Consult the countermodel at\n\n  $mace4_countermodel\n\nto see what is missing.\n";
+      } elsif ($paradox_exit_code == 2) {
+        print "Consult the countermodel at\n\n  $paradox_countermodel\n\nto see what is missing.\n";
+      }
     } else {
-      print colored ('unknown', 'cyan'), '.', "\n";
+
+      print '=' x (length ('Premise') + $padding + length (' | ') + length ('Needed according to mace4') + length (' | ') + length ('Needed according to paraox') + 1), "\n";
+      print ' Confirming Derivability of the Conjecture from the Semantically Minimal Premises', "\n";
+      print '=' x (length ('Premise') + $padding + length (' | ') + length ('Needed according to mace4') + length (' | ') + length ('Needed according to paraox') + 1), "\n";
+
+      print '* eprover...';
+      my $eprover_proof = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.eprover.proof";
+      my $eprover_proof_errors = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.eprover.proof";
+      my $eprover_status = system ("run-eprover.sh $maybe_minimal_theory > $eprover_proof 2> $eprover_proof_errors");
+      my $eprover_exit_code = $eprover_status >> 8;
+      if ($eprover_exit_code == 0) {
+        print colored ('conjecture derivable', 'green'), '!', "\n";
+      } elsif ($eprover_exit_code == 2) {
+        print colored ('countersatisfiable', 'red'), "!  (Some further principle is needed.  No countermodel was provided directly; see $eprover_proof)", "\n";
+      }
+
+      print '* vampire...';
+      my $vampire_proof = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.vampire.proof";
+      my $vampire_proof_errors = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.vampire.proof";
+      my $vampire_status = system ("run-vampire.sh $maybe_minimal_theory > $vampire_proof 2> $vampire_proof_errors");
+      my $vampire_exit_code = $vampire_status >> 8;
+      if ($vampire_exit_code == 0) {
+        print colored ('conjecture derivable', 'green'), '!', "\n";
+      } elsif ($vampire_exit_code == 2) {
+        print colored ('countersatisfiable', 'red'), "!  (Some further principle is needed.  No countermodel was provided directly; see $vampire_proof)", "\n";
+      }
+
+      print '* prover9...';
+      my $prover9_proof = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.prover9.proof";
+      my $prover9_proof_errors = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.prover9.proof";
+      my $prover9_status = system ("run-prover9.sh $maybe_minimal_theory > $prover9_proof 2> $prover9_proof_errors");
+      my $prover9_exit_code = $prover9_status >> 8;
+      if ($prover9_exit_code == 0) {
+        print colored ('conjecture derivable', 'green'), '!', "\n";
+      } elsif ($prover9_exit_code == 2) {
+        print colored ('countersatisfiable', 'red'), "! (Some further principle is needed.  No countermodel was provided directly; see $prover9_proof)", "\n";
+      } else {
+        print colored ('unknown', 'cyan'), '.', "\n";
+      }
+
+      print '=' x (length ('Premise') + $padding + length (' | ') + length ('Needed according to mace4') + length (' | ') + length ('Needed according to paraox') + 1), "\n";
     }
   }
 }
+
+print "Done.  Our work has been saved under $work_directory.\n";
 
 exit 0;
