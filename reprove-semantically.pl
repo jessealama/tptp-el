@@ -307,7 +307,7 @@ if ($mace4_exit_code == 0) {
       my $eprover_status = system ("run-eprover.sh $maybe_minimal_theory > $eprover_proof 2> $eprover_proof_errors");
       my $eprover_exit_code = $eprover_status >> 8;
       if ($eprover_exit_code == 0) {
-        print colored ('derivable', 'green'), '!', "\n";
+        print colored ('confirmed', 'green'), '!', "\n";
       } elsif ($eprover_exit_code == 2) {
         my $eprover_countersatisfiable = 0;
         print colored ('countersatisfiable', 'red'), "\n";
@@ -321,7 +321,7 @@ if ($mace4_exit_code == 0) {
       my $vampire_status = system ("run-vampire.sh $maybe_minimal_theory > $vampire_proof 2> $vampire_proof_errors");
       my $vampire_exit_code = $vampire_status >> 8;
       if ($vampire_exit_code == 0) {
-        print colored ('derivable', 'green'), '!', "\n";
+        print colored ('confirmed', 'green'), '!', "\n";
       } elsif ($vampire_exit_code == 2) {
         $vampire_countersatisfiable = 0;
         print colored ('countersatisfiable', 'red'), "!  (Some further principle is needed.  No countermodel was provided directly; see $vampire_proof)", "\n";
@@ -335,7 +335,7 @@ if ($mace4_exit_code == 0) {
       my $prover9_status = system ("run-prover9.sh $maybe_minimal_theory > $prover9_proof 2> $prover9_proof_errors");
       my $prover9_exit_code = $prover9_status >> 8;
       if ($prover9_exit_code == 0) {
-        print colored ('derivable', 'green'), '!', "\n";
+        print colored ('confirmed', 'green'), '!', "\n";
       } elsif ($prover9_exit_code == 2) {
         $prover9_countersatisfiable = 0;
         print colored ('countersatisfiable', 'red'), "\n";
