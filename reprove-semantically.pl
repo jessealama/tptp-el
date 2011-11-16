@@ -294,7 +294,7 @@ if ($mace4_exit_code == 0) {
     } else {
 
       print '=' x (length ('Premise') + $padding + length (' | ') + length ('Needed according to mace4') + length (' | ') + length ('Needed according to paraox') + 1), "\n";
-      print ' Confirming Derivability of the Conjecture from the Semantically Minimal Premises', "\n";
+      print " Deriving the conjecture from the 'semantically minimal' premises", "\n";
       print '=' x (length ('Premise') + $padding + length (' | ') + length ('Needed according to mace4') + length (' | ') + length ('Needed according to paraox') + 1), "\n";
 
       my $eprover_countersatisfiable = undef;
