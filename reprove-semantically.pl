@@ -357,6 +357,8 @@ if ($mace4_exit_code == 0) {
         if (defined $prover9_countersatisfiable) {
           print "* prover9: ", basename ($prover9_proof), "\n";
         }
+
+        print "\n";
       }
 
       print '=' x (length ('Premise') + $padding + length (' | ') + length ('Needed according to mace4') + length (' | ') + length ('Needed according to paraox') + 1), "\n";
