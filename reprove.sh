@@ -361,10 +361,10 @@ theory_dirname=`dirname $theory`;
 
 if [ -z "$2" ]; then
     try=1;
-    candidate_work_directory="${theory_dirname}/${theory_basename_sans_extension}-${try}";
+    candidate_work_directory="${theory_dirname}/${theory_basename_sans_extension}-reprove-${try}";
     while [ -e "$candidate_work_directory" -o -d "$candidate_work_directory" ]; do
         try=`expr $try + 1`;
-        candidate_work_directory="${theory_dirname}/${theory_basename_sans_extension}-${try}";
+        candidate_work_directory="${theory_dirname}/${theory_basename_sans_extension}-reprove-${try}";
     done
     work_directory="$candidate_work_directory";
 else
