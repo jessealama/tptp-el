@@ -601,9 +601,9 @@ for prover in $provers; do
         echo;
         echo "Something failed with $prover; not confirming derivability using the other provers.";
     fi
+    echo; # ensure newline
 done
 
-echo "================================================================================";
 echo "Done.  Our work has been saved in the directory $work_directory.";
 
 if [ $num_successes -eq $num_provers ]; then
