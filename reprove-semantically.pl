@@ -312,7 +312,7 @@ if ($mace4_exit_code == 0) {
         $eprover_countersatisfiable = 0;
         print colored ('countersatisfiable', 'red'), "\n";
       } else {
-        print colored ('unknown', 'cyan'), '!', "\n";
+        print colored ('unknown', 'cyan'), "\n";
       }
 
       print '* vampire...';
@@ -326,7 +326,7 @@ if ($mace4_exit_code == 0) {
         $vampire_countersatisfiable = 0;
         print colored ('countersatisfiable', 'red'), "!  (Some further principle is needed.  No countermodel was provided directly; see $vampire_proof)", "\n";
       } else {
-        print colored ('unknown', 'cyan'), '.', "\n";
+        print colored ('unknown', 'cyan'), "\n";
       }
 
       print '* prover9...';
@@ -340,7 +340,7 @@ if ($mace4_exit_code == 0) {
         $prover9_countersatisfiable = 0;
         print colored ('countersatisfiable', 'red'), "\n";
       } else {
-        print colored ('unknown', 'cyan'), '.', "\n";
+        print colored ('unknown', 'cyan'), "\n";
       }
 
       if (defined $eprover_countersatisfiable or defined $vampire_countersatisfiable or defined $prover9_countersatisfiable) {
