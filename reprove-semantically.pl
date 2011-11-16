@@ -215,7 +215,14 @@ foreach my $i (1 .. scalar @non_conjecture_formulas) {
     print colored ('possibly not needed', 'cyan');
   }
 
-  print "\n";
+  if ($i == scalar @non_conjecture_fofs) {
+    print "\n";
+  } else {
+    print "\n";
+    print copy_string ('-', $length_of_longest_premise + length (' | ') + length ('Needed according to mace4') + length (' | ') + length ('Needed according to paraox') + 1), "\n";
+}
+
+
 }
 
 print copy_string ('=', length ('Premise') + $padding + length (' | ') + length ('Needed according to mace4') + length (' | ') + length ('Needed according to paraox') + 1), "\n";
