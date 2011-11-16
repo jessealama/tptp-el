@@ -172,6 +172,8 @@ foreach my $i (1 .. scalar @non_conjecture_formulas) {
   print "\n";
 }
 
+unlink 'splork';
+
 # Test whether the formulas that we found were needed suffice for a proof
 
 my $maybe_minimal_theory = "$tptp_theory.maybe-semantically-minimal";
