@@ -344,16 +344,18 @@ if ($mace4_exit_code == 0) {
       }
 
       if (defined $eprover_countersatisfiable or defined $vampire_countersatisfiable or defined $prover9_countersatisfiable) {
+        print "\n";
         print "At least one theorem prover found that that the conjecture is countersatisfiable in the 'semantically minimal' theory.\n";
         print 'Our theorem provers do not directly provide a countermodel, but you may consult the following proofs to see what went wrong:', "\n";
+        print "\n";
         if (defined $eprover_countersatisfiable) {
-          print "* $eprover_proof\n";
+          print "* eprover: ", basename ($eprover_proof), "\n";
         }
         if (defined $vampire_countersatisfiable) {
-          print "* $vampire_proof\n";
+          print "* vampire: ", basename ($vampire_proof), "\n";
         }
         if (defined $prover9_countersatisfiable) {
-          print "* $prover9_proof\n";
+          print "* prover9: ", basename ($prover9_proof), "\n";
         }
       }
 
