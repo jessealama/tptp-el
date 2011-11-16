@@ -306,6 +306,8 @@ if ($mace4_exit_code == 0) {
         print colored ('conjecture derivable', 'green'), '!', "\n";
       } elsif ($eprover_exit_code == 2) {
         print colored ('countersatisfiable', 'red'), "!  (Some further principle is needed.  No countermodel was provided directly; see $eprover_proof)", "\n";
+      } else {
+        print colored ('unknown', 'cyan'), '!', "\n";
       }
 
       print '* vampire...';
@@ -317,6 +319,8 @@ if ($mace4_exit_code == 0) {
         print colored ('conjecture derivable', 'green'), '!', "\n";
       } elsif ($vampire_exit_code == 2) {
         print colored ('countersatisfiable', 'red'), "!  (Some further principle is needed.  No countermodel was provided directly; see $vampire_proof)", "\n";
+      } else {
+        print colored ('unknown', 'cyan'), '.', "\n";
       }
 
       print '* prover9...';
