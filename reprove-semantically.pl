@@ -299,7 +299,7 @@ if ($mace4_exit_code == 0) {
 
       print '* eprover...';
       my $eprover_proof = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.eprover.proof";
-      my $eprover_proof_errors = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.eprover.proof";
+      my $eprover_proof_errors = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.eprover.proof.errors";
       my $eprover_status = system ("run-eprover.sh $maybe_minimal_theory > $eprover_proof 2> $eprover_proof_errors");
       my $eprover_exit_code = $eprover_status >> 8;
       if ($eprover_exit_code == 0) {
@@ -310,7 +310,7 @@ if ($mace4_exit_code == 0) {
 
       print '* vampire...';
       my $vampire_proof = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.vampire.proof";
-      my $vampire_proof_errors = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.vampire.proof";
+      my $vampire_proof_errors = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.vampire.proof.errors";
       my $vampire_status = system ("run-vampire.sh $maybe_minimal_theory > $vampire_proof 2> $vampire_proof_errors");
       my $vampire_exit_code = $vampire_status >> 8;
       if ($vampire_exit_code == 0) {
@@ -321,7 +321,7 @@ if ($mace4_exit_code == 0) {
 
       print '* prover9...';
       my $prover9_proof = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.prover9.proof";
-      my $prover9_proof_errors = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.prover9.proof";
+      my $prover9_proof_errors = "$work_directory/$tptp_theory_basename.maybe-semantically-minimal.prover9.proof.errors";
       my $prover9_status = system ("run-prover9.sh $maybe_minimal_theory > $prover9_proof 2> $prover9_proof_errors");
       my $prover9_exit_code = $prover9_status >> 8;
       if ($prover9_exit_code == 0) {
