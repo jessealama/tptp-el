@@ -155,7 +155,7 @@ function ensure_sensible_tptp_theory() {
         exit 1;
     fi
 
-    local conjecture=`tptp4X -x -N -V -umachine $1 | grep --count ',conjecture,'`;
+    local conjecture=`tptp4X -c -x -N -V -umachine $1 | grep --count ',conjecture,' | sed -e 's/^ *//'`;
     if [ "$conjecture" -eq "0" ]; then
         error "The TPTP theory at '$1' contains no conjecture formula.";
         exit 1;
