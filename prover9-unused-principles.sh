@@ -26,12 +26,9 @@ fi
 for formula in `tptp4X -V -N -c -x -umachine $theory | grep --invert-match ',conjecture,' | cut -f 1 -d ',' | sed -e 's/fof(//'`; do
     grep --silent "label($formula)" $prover9_proof > /dev/null 2>&1;
     if [ $? -ne "0" ]; then
-        grep --silent "label(${formula}_AndLHS)" $prover9_proof > /dev/null 2>&1;
+        grep --silent "label(${formula}(_AndLHS|_AndRHS)*)" $prover9_proof > /dev/null 2>&1;
         if [ $? -ne "0" ]; then
-            grep --silent "label(${formula}_AndRHS)" $prover9_proof > /dev/null 2>&1;
-            if [ $? -ne "0" ]; then
-                echo $formula;
-            fi
+            echo $formula;
         fi
     fi
 done
