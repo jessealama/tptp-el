@@ -285,9 +285,13 @@ function keep_proving() {
 
     unused_principles="$prover_directory/$theory_basename.$proof_attempt.proof.unused-principles";
 
-    while [ $proof_attempt = "1" -o -s $unused_principles -o $proof_attempt -lt "10" ]; do
+    while [ $proof_attempt = "1" -o -s $unused_principles ]; do
 
         echo -n "* Proof attempt $proof_attempt..."
+
+        if [ $proof_attempt -gt "10" ]; then
+            return 1;
+        fi
 
         proof="$prover_directory/$theory_basename.$proof_attempt.proof";
         error_log="$prover_directory/$theory_basename.$proof_attempt.proof.errors";
@@ -295,7 +299,7 @@ function keep_proving() {
         unused_principles="$prover_directory/$theory_basename.$proof_attempt.proof.unused-principles";
         trimmed_theory="$prover_directory/$theory_basename.$proof_attempt.trimmed";
 
-        run_prover_with_timeout $prover_script $theory $proof $error_log;
+        run_prover_with_timeout $prover_script $theory_in_work_dir $proof $error_log;
 
         prover_exit_code="$?";
 
