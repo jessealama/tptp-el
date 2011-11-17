@@ -285,7 +285,7 @@ function keep_proving() {
 
     unused_principles="$prover_directory/$theory_basename.$proof_attempt.proof.unused-principles";
 
-    while [ $proof_attempt = "1" -o -s $unused_principles ]; do
+    while [ $proof_attempt = "1" -o $proof_attempt -lt "10" -o -s $unused_principles ]; do
 
         echo -n "* Proof attempt $proof_attempt..."
 
