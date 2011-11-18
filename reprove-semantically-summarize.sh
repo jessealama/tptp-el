@@ -33,7 +33,7 @@ minimal_theory_basename=`basename "$minimal_theory" .maybe-semantically-minimal`
 
 # Heuristic for whether a countermodel was found: the paradox model file is nonempty
 
-paradox_countermodel="$reprove_semantically_dir/$minimal_theory_basename.paradox.countermodel";
+paradox_countermodel="$reprove_semantically_dir/$minimal_theory_basename.maybe-semantically-minimal.paradox.countermodel";
 
 if [ ! -e "$paradox_countermodel" ]; then
     echo "Error: we couldn't find a paradox countermodel file at '$paradox_countermodel'.";
@@ -53,7 +53,7 @@ if [ -s "$paradox_countermodel" ]; then
     exit 0;
 fi
 
-mace4_countermodel_errors="$reprove_semantically_dir/$minimal_theory_basename.mace4.countermodel.errors";
+mace4_countermodel_errors="$reprove_semantically_dir/$minimal_theory_basename.maybe-semantically-minimal.mace4.countermodel.errors";
 
 if [ ! -e "$mace4_countermodel_errors" ]; then
     echo "Error: we couldn't find a mace4 error output file at '$mace4_countermodel_errors'.";
