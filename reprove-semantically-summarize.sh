@@ -102,7 +102,7 @@ eprover_provable=0;
 grep --silent 'Refutation found' "$vampire_proof" > /dev/null 2>&1;
 
 if [ $? -eq "0" ]; then
-    vapire_provable=1;
+    vampire_provable=1;
 fi
 
 grep --silent 'end of proof' "$prover9_proof" > /dev/null 2>&1;
