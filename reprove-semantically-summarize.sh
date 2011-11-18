@@ -30,6 +30,7 @@ if [ ! -r "$minimal_theory" ]; then
 fi
 
 minimal_theory_basename=`basename "$minimal_theory"`;
+minimal_theory_basename_shorter=`basename "$minimal_theory" .maybe-semantically-minimal`;
 
 # Heuristic for whether a countermodel was found: the paradox model file is nonempty
 
@@ -49,7 +50,7 @@ fi
 # nonempty, then our semantically minimal theory was countersatisfiable
 
 if [ -s "$paradox_countermodel" ]; then
-    echo "$minimal_theory_basename: countersatisfiable (paradox)";
+    echo "$minimal_theory_basename_shorter: countersatisfiable (paradox)";
     exit 0;
 fi
 
@@ -68,7 +69,7 @@ fi
 grep --silent 'exit (max_models)' "$mace4_countermodel_errors" > /dev/null 2>&1;
 
 if [ $? -eq "0" ]; then
-  echo "$minimal_theory_basename: countersatisfiable (mace4)";
+  echo "$minimal_theory_basename_shorter: countersatisfiable (mace4)";
   exit 0;
 fi
 
@@ -117,21 +118,21 @@ if [ $? -eq "0" ]; then
 fi
 
 if [ $vampire_provable -eq "1" -a $prover9_provable -eq "1" -a $eprover_provable -eq "1" ]; then
-    echo "$minimal_theory_basename: provable (vampire prover9 eprover)";
+    echo "$minimal_theory_basename_shorter: provable (vampire prover9 eprover)";
 elif [ $vampire_provable -eq "1" -a $prover9_provable -eq "1" ]; then
-    echo "$minimal_theory_basename: provable (vampire prover9)";
+    echo "$minimal_theory_basename_shorter: provable (vampire prover9)";
 elif [ $vampire_provable -eq "1" -a $eprover_provable -eq "1" ]; then
-    echo "$minimal_theory_basename: provable (vampire eprover)";
+    echo "$minimal_theory_basename_shorter: provable (vampire eprover)";
 elif [ $vampire_provable -eq "1" ]; then
-    echo "$minimal_theory_basename: provable (vampire)";
+    echo "$minimal_theory_basename_shorter: provable (vampire)";
 elif [ $prover9_provable -eq "1" -a $eprover_provable -eq "1" ]; then
-    echo "$minimal_theory_basename: provable (prover9 eprover)";
+    echo "$minimal_theory_basename_shorter: provable (prover9 eprover)";
 elif [ $prover9_provable -eq "1" ]; then
-    echo "$minimal_theory_basename: provable (prover9)";
+    echo "$minimal_theory_basename_shorter: provable (prover9)";
 elif [ $eprover_provable -eq "1" ]; then
-    echo "$minimal_theory_basename: provable (eprover)";
+    echo "$minimal_theory_basename_shorter: provable (eprover)";
 else
-    echo "$minimal_theory_basename: unprovable";
+    echo "$minimal_theory_basename_shorter: unprovable";
 fi
 
 exit 0;
