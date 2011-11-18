@@ -32,45 +32,49 @@ fi
 minimal_theory_basename=`basename "$minimal_theory"`;
 minimal_theory_basename_shorter=`basename "$minimal_theory" .maybe-semantically-minimal`;
 
+paradox_countersatisfiable=0;
+mace4_countersatisfiable=0;
+
 # Heuristic for whether a countermodel was found: the paradox model file is nonempty
 
 paradox_countermodel="$reprove_semantically_dir/$minimal_theory_basename.paradox.countermodel";
 
-if [ ! -e "$paradox_countermodel" ]; then
-    echo "Error: we couldn't find a paradox countermodel file at '$paradox_countermodel'.";
-    exit 1;
-fi
-
-if [ ! -r "$paradox_countermodel" ]; then
-    echo "Error: the paradox countermodel file at '$paradox_countermodel' is unreadable.";
-    exit 1;
-fi
-
-# First non-trivial exit point: if the paradox countermodel file is
-# nonempty, then our semantically minimal theory was countersatisfiable
-
-if [ -s "$paradox_countermodel" ]; then
-    echo "$minimal_theory_basename_shorter: countersatisfiable (paradox)";
-    exit 0;
+if [ -e "$paradox_countermodel" ]; then
+    if [ ! -r "$paradox_countermodel" ]; then
+        echo "Error: the paradox countermodel file at '$paradox_countermodel' is unreadable.";
+        exit 1;
+    fi
+    if [ -s "$paradox_countermodel" ]; then
+        paradox_countersatisfiable=1;
+    fi
 fi
 
 mace4_countermodel_errors="$reprove_semantically_dir/$minimal_theory_basename.mace4.countermodel.errors";
 
-if [ ! -e "$mace4_countermodel_errors" ]; then
-    echo "Error: we couldn't find a mace4 error output file at '$mace4_countermodel_errors'.";
-    exit 1;
+if [ -e "$mace4_countermodel_errors" ]; then
+    if [ ! -r "$mace4_countermodel_errors" ]; then
+        echo "Error: the mace4 countermodel error output file at '$mace4_countermodel_errors' is unreadable.";
+        exit 1;
+    fi
+    grep --silent 'exit (max_models)' "$mace4_countermodel_errors" > /dev/null 2>&1;
+    if [ $? -eq "0" ]; then
+        mace4_countersatisfiable=1;
+    fi
 fi
 
-if [ ! -r "$mace4_countermodel_errors" ]; then
-    echo "Error: the mace4 countermodel error output file at '$mace4_countermodel_errors' is unreadable.";
-    exit 1;
-fi
-
-grep --silent 'exit (max_models)' "$mace4_countermodel_errors" > /dev/null 2>&1;
-
-if [ $? -eq "0" ]; then
-  echo "$minimal_theory_basename_shorter: countersatisfiable (mace4)";
-  exit 0;
+if [ $mace4_countersatisfiable -eq "1" ]; then
+    if [ $paradox_countersatisfiable -eq "1" ]; then
+        echo "$minimal_theory_basename_shorter: countersatisfiable (mace4 paradox)";
+        exit 0;
+    else
+        echo "$minimal_theory_basename_shorter: countersatisfiable (mace4)";
+        exit 0;
+    fi
+else
+    if [ $paradox_countersatisfiable -eq "1" ]; then
+        echo "$minimal_theory_basename_shorter: countersatisfiable (paradox)";
+        exit 0;
+    fi
 fi
 
 # The minimal theory seems to be not countersatisfiable.  Let's find
