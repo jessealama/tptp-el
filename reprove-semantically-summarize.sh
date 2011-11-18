@@ -29,11 +29,11 @@ if [ ! -r "$minimal_theory" ]; then
     exit 1;
 fi
 
-minimal_theory_basename=`basename "$minimal_theory" .maybe-semantically-minimal`;
+minimal_theory_basename=`basename "$minimal_theory"`;
 
 # Heuristic for whether a countermodel was found: the paradox model file is nonempty
 
-paradox_countermodel="$reprove_semantically_dir/$minimal_theory_basename.maybe-semantically-minimal.paradox.countermodel";
+paradox_countermodel="$reprove_semantically_dir/$minimal_theory_basename.paradox.countermodel";
 
 if [ ! -e "$paradox_countermodel" ]; then
     echo "Error: we couldn't find a paradox countermodel file at '$paradox_countermodel'.";
