@@ -53,7 +53,7 @@ if [ -s "$paradox_countermodel" ]; then
     exit 0;
 fi
 
-mace4_countermodel_errors="$reprove_semantically_dir/$minimal_theory_basename.maybe-semantically-minimal.mace4.countermodel.errors";
+mace4_countermodel_errors="$reprove_semantically_dir/$minimal_theory_basename.mace4.countermodel.errors";
 
 if [ ! -e "$mace4_countermodel_errors" ]; then
     echo "Error: we couldn't find a mace4 error output file at '$mace4_countermodel_errors'.";
