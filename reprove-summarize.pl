@@ -24,11 +24,11 @@ sub copy_string {
 
 sub last_successful_proof_in_dir {
   my $dir = shift;
-  my @used_principles_files = `find "$dir" -type f -name "*.used-principles"`;
+  my @used_principles_files = `find "$dir" -type f -name "*.proof.used-principles"`;
   if (scalar @used_principles_files == 0) {
     return undef;
   } else {
-    my @candidates = `find "$dir" -type f -name "*.used-principles" | xargs ls -t`;
+    my @candidates = `find "$dir" -type f -name "*.proof.used-principles" | xargs ls -t`;
     chomp @candidates;
     my $num_candidates = scalar @candidates;
     my $i = 0;
