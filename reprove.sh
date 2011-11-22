@@ -224,7 +224,7 @@ function run_prover_with_timeout() {
     local proof=$3;
     local errors=$4;
 
-    $prover_script $theory $prover_timeout > $proof 2> $errors;
+    $prover_script $theory $prover_timeout > $proof 2> "$errors";
 
     return $?;
 }
@@ -249,9 +249,9 @@ function keep_proving() {
     local prover_directory=$work_directory/$prover_name;
     mkdir -p $prover_directory;
 
-    local conjecture_formula=`tptp4X -V -N -umachine -c $theory | grep ',conjecture,'`;
+    local conjecture_formula=`tptp4X -V -N -umachine -c $theory_in_work_dir | grep ',conjecture,'`;
     local theory_basename=`basename $theory`;
-    local theory=$theory;
+    local theory=$theory_in_work_dir;
 
     # Let's go!
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++";
@@ -299,7 +299,7 @@ function keep_proving() {
         unused_principles="$prover_directory/$theory_basename.$proof_attempt.proof.unused-principles";
         trimmed_theory="$prover_directory/$theory_basename.$proof_attempt.trimmed";
 
-        run_prover_with_timeout $prover_script $theory_in_work_dir $proof $error_log;
+        run_prover_with_timeout $prover_script $theory_in_work_dir $proof "$error_log";
 
         prover_exit_code="$?";
 
@@ -422,7 +422,8 @@ done
 echo -e "${PURPLE}$theory_basename${NC}";
 echo "================================================================================";
 
-# Save the whole theory
+# Save the whole theory in the work dir
+theory_in_work_dir="$work_directory/$theory_basename";
 tptp4X -N -V -c -x -umachine $theory > "$work_directory/$theory_basename";
 
 # Save the axioms (non-conjecture formulas) of the theory in a
