@@ -224,8 +224,10 @@ sub counts_line {
   return $line;
 }
 
-for (my $i = 0; $i < scalar @all_principles; $i++) {
-  my $principle = $all_principles[$i];
+my @sorted_principles = sort @all_principles;
+
+for (my $i = 0; $i < scalar @sorted_principles; $i++) {
+  my $principle = $sorted_principles[$i];
   my $principle_length = length $principle;
   my $padding_for_this_principle = $length_of_longest_principle - $principle_length;
   my $summary_line = summary_line_for_principle ($principle, $padding_for_this_principle);

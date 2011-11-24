@@ -1,5 +1,5 @@
 * TODO Parallelize reprove-semantically
 * DONE Row separators for reprove-summarize
-* TODO Sort premises in reprove-summarize
+* DONE Sort premises in reprove-summarize
 * DONE Print *all* principles, even those in the initial theory, in reprove-summarize
 
