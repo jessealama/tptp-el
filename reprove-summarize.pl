@@ -121,6 +121,29 @@ foreach my $prover (@provers) {
   # }
 }
 
+my @initial_theory_candidates = `find $reprove_dir -maxdepth 1 -mindepth 1 -type f ! -name "*.model" ! -name "*.errors" ! -name "*.ax"`;
+chomp @initial_theory_candidates;
+
+if (scalar @initial_theory_candidates == 0) {
+  print 'Warning: we did not find the initial theory under ', $reprove_dir, ' (there were no candidates)', "\n";
+}
+
+if (scalar @initial_theory_candidates > 1) {
+  print 'Warning: we did not find the initial theory under ', $reprove_dir, ' (there are multiple candidates)', "\n";
+}
+
+my $initial_theory = undef;
+my @initial_principles = undef;
+
+if (scalar @initial_theory_candidates == 1) {
+  $initial_theory = $initial_theory_candidates[0];
+}
+
+if (defined $initial_theory) {
+  @initial_principles = `tptp4X -N -V -c -x -umachine $initial_theory | grep --invert-match ',conjecture,' | cut -f 1 -d ',' | sed -e 's/fof(//'`;
+  chomp @initial_principles;
+}
+
 my %principles_for_prover = ();
 
 foreach my $prover (@provers) {
@@ -141,15 +164,8 @@ foreach my $prover (@provers) {
 
 sub all_used_principles {
   my %all_used_principles = ();
-  foreach my $prover (@provers) {
-    my $prover_dir = subdir_for_prover ($prover);
-    my $last_proof = last_successful_proof_in_dir ($prover_dir);
-    if (defined $last_proof) {
-      my @principles = @{principles_of_proof ($last_proof)};
-      foreach my $principle (@principles) {
-        $all_used_principles{$principle} = 0;
-      }
-    }
+  foreach my $principle (@initial_principles) {
+    $all_used_principles{$principle} = 0;
   }
   my @principles = keys %all_used_principles;
   return \@principles;
