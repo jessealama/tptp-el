@@ -69,7 +69,7 @@ sub count_used_principles_in_dir {
   return $count;
 }
 
-if (scalar @ARGV == 0) {
+if (scalar @ARGV == 0 or scalar @ARGV > 1) {
   print 'Usage: summarize-minimization.pl REPROVE-DIRECTORY', "\n";
   exit 1;
 }
