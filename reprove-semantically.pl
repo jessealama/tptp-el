@@ -198,7 +198,7 @@ foreach my $i (1 .. scalar @non_conjecture_formulas) {
     print colored ('needed', 'red'), '                   ';
     $needed_formulas{$non_conjecture_fof} = 0;
   } else {
-    print colored ('possibly not needed', 'cyan'), '      ';
+    print colored ('unknown', 'cyan'), '      ';
   }
 
   print ' | ';
@@ -212,7 +212,7 @@ foreach my $i (1 .. scalar @non_conjecture_formulas) {
     print colored ('needed', 'red');
     $needed_formulas{$non_conjecture_fof} = 0;
   } else {
-    print colored ('possibly not needed', 'cyan');
+    print colored ('unknown', 'cyan');
   }
 
   if ($i == scalar @non_conjecture_fofs) {
