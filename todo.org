@@ -1,5 +1,9 @@
 * TODO Parallelize reprove-semantically
+* TODO Reformatter for tptp files
+* TODO TPTP-diff
+  It could also show, given two theories, that two formulas under the
+  same name have different renderings.  Or, conversely, two formulas
+  with different names have the same renderings.
 * DONE Row separators for reprove-summarize
 * DONE Sort premises in reprove-summarize
 * DONE Print *all* principles, even those in the initial theory, in reprove-summarize
-
